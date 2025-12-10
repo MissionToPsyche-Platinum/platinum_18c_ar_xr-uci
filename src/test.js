@@ -4,6 +4,8 @@ import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import "./qr.js";
 
 // import "./style.css";
+const MAX_SPAWN = 1;
+let spawnTracker = 0;
 
 let container;
 let camera, scene, renderer;
@@ -14,7 +16,9 @@ let reticle;
 let hitTestSource = null;
 let hitTestSourceRequested = false;
 let planeFound = false;
+
 let asteroidGltf;
+let buttonMesh;
 
 // check for webxr session support
 if ("xr" in navigator) {
@@ -47,9 +51,12 @@ function init() {
         20
     );
 
-    const directional = new THREE.DirectionalLight(0xffffff, 1);
-    directional.position.set(2, 2, 2);
-    scene.add(directional);
+    const directionalTop = new THREE.DirectionalLight(0xffffff, 1);
+    const directionalBottom = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalTop.position.set(2, 2, 2);
+    directionalBottom.position.set(-2, -2, -2);
+    scene.add(directionalTop);
+    scene.add(directionalBottom);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -67,13 +74,13 @@ function init() {
     );
 
     function onSelect() {
-        if (reticle.visible && asteroidGltf) {
-            //pick random child from asteroidGltf
-            const asteroid =
-                asteroidGltf.children[
-                    Math.floor(Math.random() * asteroidGltf.children.length)
-                ];
-            const mesh = asteroid.clone();
+        document.getElementById(
+            "log"
+        ).innerText = `spawnTracker: ${spawnTracker}\nMAX_SPAWN: ${MAX_SPAWN}`;
+
+        if (spawnTracker < MAX_SPAWN && reticle.visible && asteroidGltf) {
+            spawnTracker++;
+            const mesh = asteroidGltf;
 
             reticle.matrix.decompose(
                 mesh.position,
@@ -82,19 +89,33 @@ function init() {
             );
             const scale = 0.25;
             mesh.scale.set(scale, scale, scale);
-            //random rotation
-            // mesh.rotateY(Math.random() * Math.PI * 2);
+            mesh.position.y += 0.5;
             scene.add(mesh);
+        } else {
+            const tempMatrix = new THREE.Matrix4();
+            tempMatrix.identity().extractRotation(controller.matrixWorld);
+            const raycaster = new THREE.Raycaster();
+            raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+            raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
 
-            // animate growing via hacky setInterval then destroy it when fully grown
-            const interval = setInterval(() => {
-                mesh.scale.multiplyScalar(1.01);
+            const arrow = new THREE.ArrowHelper(
+                raycaster.ray.direction,
+                raycaster.ray.origin,
+                1,
+                0x00ff00
+            );
+            scene.add(arrow);
 
-                mesh.rotateY(0.03);
-            }, 16);
-            setTimeout(() => {
-                clearInterval(interval);
-            }, 500);
+            const intersects = raycaster.intersectObject(buttonMesh);
+            document.getElementById(
+                "log"
+            ).innerText = `Ray Casting!\nIntersects: ${intersects.map((i) =>
+                i.point.toArray()
+            )}\nLength: ${intersects.length}`;
+            if (intersects.length > 0) {
+                console.log("Asteroid button pressed!");
+                document.getElementById("log").innerText = `TRIGGERED!`;
+            }
         }
     }
 
@@ -120,8 +141,21 @@ function init() {
         const modelWrapper = new THREE.Object3D();
         tempGltf.position.sub(center);
         modelWrapper.add(tempGltf);
+
+        // after creating the asteroid mesh
+        buttonMesh = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.2, 0.2),
+            new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+                side: THREE.DoubleSide,
+            })
+        );
+        buttonMesh.position.set(0, box.getSize(new THREE.Vector3()).y / 2, 0); // above asteroid
+        buttonMesh.rotateX(Math.PI / 2);
+        modelWrapper.add(buttonMesh);
+
         asteroidGltf = modelWrapper;
-        scene.add(modelWrapper);
+        // scene.add(modelWrapper);
     });
 
     window.addEventListener("resize", onWindowResize);
@@ -175,11 +209,12 @@ function render(timestamp, frame) {
                         "flex";
                 }
                 const hit = hitTestResults[0];
-
-                reticle.visible = true;
-                reticle.matrix.fromArray(
-                    hit.getPose(referenceSpace).transform.matrix
-                );
+                if (spawnTracker < MAX_SPAWN) {
+                    reticle.visible = true;
+                    reticle.matrix.fromArray(
+                        hit.getPose(referenceSpace).transform.matrix
+                    );
+                }
             } else {
                 reticle.visible = false;
             }
