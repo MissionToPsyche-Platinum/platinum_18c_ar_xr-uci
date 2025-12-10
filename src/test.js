@@ -1,9 +1,19 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
-import "./qr.js";
 
-// import "./style.css";
+import {
+    getARButton,
+    getCamera,
+    getDirectionalBottomLight,
+    getDirectionalTopLight,
+    getRenderer,
+    getController,
+    getRecticle,
+} from "./components.js";
+import { log } from "./util.js";
+import "./qr.js";
+import "./style.css";
+
 const MAX_SPAWN = 1;
 let spawnTracker = 0;
 
@@ -32,109 +42,93 @@ if ("xr" in navigator) {
     });
 }
 
+// CALLBACKS
 function sessionStart() {
     planeFound = false;
     //show #tracking-prompt
     document.getElementById("tracking-prompt").style.display = "block";
 }
 
+function onSelect() {
+    log(`spawnTracker: ${spawnTracker}\nMAX_SPAWN: ${MAX_SPAWN}`);
+
+    if (spawnTracker < MAX_SPAWN && reticle.visible && asteroidGltf) {
+        spawnTracker++;
+        const mesh = asteroidGltf;
+
+        reticle.matrix.decompose(mesh.position, mesh.quaternion, mesh.scale);
+
+        const scale = 0.25;
+        mesh.scale.set(scale, scale, scale);
+        mesh.position.y += 0.5;
+        scene.add(mesh);
+    } else {
+        const tempMatrix = new THREE.Matrix4();
+        tempMatrix.identity().extractRotation(controller.matrixWorld);
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+        raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+
+        const arrow = new THREE.ArrowHelper(
+            raycaster.ray.direction,
+            raycaster.ray.origin,
+            1,
+            0x00ff00
+        );
+
+        scene.add(arrow);
+
+        const intersects = raycaster.intersectObject(buttonMesh);
+        log(`Ray Casting!\nLength: ${intersects.length}`);
+        if (intersects.length > 0) {
+            log(`TRIGGERED!`);
+        }
+    }
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+// MAIN FUNCTIONS
 function init() {
     container = document.createElement("div");
     document.body.appendChild(container);
 
     scene = new THREE.Scene();
+    camera = getCamera();
+    renderer = getRenderer(sessionStart);
+    controller = getController(renderer, onSelect);
+    reticle = getRecticle();
 
-    camera = new THREE.PerspectiveCamera(
-        70,
-        window.innerWidth / window.innerHeight,
-        0.01,
-        20
-    );
-
-    const directionalTop = new THREE.DirectionalLight(0xffffff, 1);
-    const directionalBottom = new THREE.DirectionalLight(0xffffff, 0.5);
-    directionalTop.position.set(2, 2, 2);
-    directionalBottom.position.set(-2, -2, -2);
-    scene.add(directionalTop);
-    scene.add(directionalBottom);
-
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.xr.enabled = true;
-    container.appendChild(renderer.domElement);
-
-    renderer.xr.addEventListener("sessionstart", sessionStart);
-
-    document.body.appendChild(
-        ARButton.createButton(renderer, {
-            requiredFeatures: ["local", "hit-test", "dom-overlay"],
-            domOverlay: { root: document.querySelector("#overlay") },
-        })
-    );
-
-    function onSelect() {
-        document.getElementById(
-            "log"
-        ).innerText = `spawnTracker: ${spawnTracker}\nMAX_SPAWN: ${MAX_SPAWN}`;
-
-        if (spawnTracker < MAX_SPAWN && reticle.visible && asteroidGltf) {
-            spawnTracker++;
-            const mesh = asteroidGltf;
-
-            reticle.matrix.decompose(
-                mesh.position,
-                mesh.quaternion,
-                mesh.scale
-            );
-            const scale = 0.25;
-            mesh.scale.set(scale, scale, scale);
-            mesh.position.y += 0.5;
-            scene.add(mesh);
-        } else {
-            const tempMatrix = new THREE.Matrix4();
-            tempMatrix.identity().extractRotation(controller.matrixWorld);
-            const raycaster = new THREE.Raycaster();
-            raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-            raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
-
-            const arrow = new THREE.ArrowHelper(
-                raycaster.ray.direction,
-                raycaster.ray.origin,
-                1,
-                0x00ff00
-            );
-            scene.add(arrow);
-
-            const intersects = raycaster.intersectObject(buttonMesh);
-            document.getElementById(
-                "log"
-            ).innerText = `Ray Casting!\nIntersects: ${intersects.map((i) =>
-                i.point.toArray()
-            )}\nLength: ${intersects.length}`;
-            if (intersects.length > 0) {
-                console.log("Asteroid button pressed!");
-                document.getElementById("log").innerText = `TRIGGERED!`;
-            }
-        }
-    }
-
-    controller = renderer.xr.getController(0);
-    controller.addEventListener("select", onSelect);
+    scene.add(getDirectionalTopLight());
+    scene.add(getDirectionalBottomLight());
     scene.add(controller);
-
-    reticle = new THREE.Mesh(
-        new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
-        new THREE.MeshBasicMaterial()
-    );
-    reticle.matrixAutoUpdate = false;
-    reticle.visible = false;
     scene.add(reticle);
 
-    //load psyche.glb
     const loader = new GLTFLoader();
-
     loader.load("psyche.glb", (gltf) => {
+        function getAsteroidButton() {
+            const buttonMesh = new THREE.Mesh(
+                new THREE.PlaneGeometry(0.2, 0.2),
+                new THREE.MeshBasicMaterial({
+                    color: 0xff0000,
+                    side: THREE.DoubleSide,
+                })
+            );
+            buttonMesh.position.set(
+                0,
+                box.getSize(new THREE.Vector3()).y / 2,
+                0
+            );
+            buttonMesh.rotateX(Math.PI / 2);
+            return buttonMesh;
+        }
+
+        // Center asteroid
         const tempGltf = gltf.scene;
         const box = new THREE.Box3().setFromObject(tempGltf);
         const center = box.getCenter(new THREE.Vector3());
@@ -142,34 +136,17 @@ function init() {
         tempGltf.position.sub(center);
         modelWrapper.add(tempGltf);
 
-        // after creating the asteroid mesh
-        buttonMesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(0.2, 0.2),
-            new THREE.MeshBasicMaterial({
-                color: 0xff0000,
-                side: THREE.DoubleSide,
-            })
-        );
-        buttonMesh.position.set(0, box.getSize(new THREE.Vector3()).y / 2, 0); // above asteroid
-        buttonMesh.rotateX(Math.PI / 2);
-        modelWrapper.add(buttonMesh);
+        // Create button on asteroid
+        buttonMesh = getAsteroidButton();
+        if (buttonMesh) modelWrapper.add(buttonMesh);
 
+        // Assign result
         asteroidGltf = modelWrapper;
-        // scene.add(modelWrapper);
     });
 
+    container.appendChild(renderer.domElement);
+    document.body.appendChild(getARButton(renderer));
     window.addEventListener("resize", onWindowResize);
-}
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-function animate() {
-    renderer.setAnimationLoop(render);
 }
 
 function render(timestamp, frame) {
@@ -178,17 +155,15 @@ function render(timestamp, frame) {
         const session = renderer.xr.getSession();
 
         if (hitTestSourceRequested === false) {
-            session
-                .requestReferenceSpace("viewer")
-                .then(function (referenceSpace) {
-                    session
-                        .requestHitTestSource({ space: referenceSpace })
-                        .then(function (source) {
-                            hitTestSource = source;
-                        });
-                });
+            session.requestReferenceSpace("viewer").then((referenceSpace) => {
+                session
+                    .requestHitTestSource({ space: referenceSpace })
+                    .then((source) => {
+                        hitTestSource = source;
+                    });
+            });
 
-            session.addEventListener("end", function () {
+            session.addEventListener("end", () => {
                 hitTestSourceRequested = false;
                 hitTestSource = null;
             });
@@ -222,4 +197,8 @@ function render(timestamp, frame) {
     }
 
     renderer.render(scene, camera);
+}
+
+function animate() {
+    renderer.setAnimationLoop(render);
 }
