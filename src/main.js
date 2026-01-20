@@ -30,8 +30,10 @@ function init() {
         20
     );
     // Move Camera away so it won't colide with model
-    camera.position.z = 5;
-
+    
+    // REMOVED CAMERA POSITION: TEST GIT
+    // camera.position.z = 5;
+    
     // RENDERER
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
