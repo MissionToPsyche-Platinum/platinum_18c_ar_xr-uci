@@ -9,17 +9,19 @@ import {
     getRenderer,
     getController,
     getRecticle,
+    getAsteroidButton,
 } from "./components.js";
 import { log } from "./util.js";
 import "./qr.js";
 import "./style.css";
 
-const MAX_SPAWN = 1;
-let spawnTracker = 0;
-
 let container;
 let camera, scene, renderer;
 let controller;
+
+const MAX_BUTTONS = 5;
+let buttonMeshes = [];
+let buttonsSpawned = false;
 
 let reticle;
 
@@ -28,7 +30,6 @@ let hitTestSourceRequested = false;
 let planeFound = false;
 
 let asteroidGltf;
-let buttonMesh;
 
 // check for webxr session support
 if ("xr" in navigator) {
@@ -52,17 +53,35 @@ function sessionStart() {
 function onSelect() {
     log(`spawnTracker: ${spawnTracker}\nMAX_SPAWN: ${MAX_SPAWN}`);
 
-    if (spawnTracker < MAX_SPAWN && reticle.visible && asteroidGltf) {
-        spawnTracker++;
-        const mesh = asteroidGltf;
+    function addAsteroid() {
+        const asteroidMesh = asteroidGltf;
 
-        reticle.matrix.decompose(mesh.position, mesh.quaternion, mesh.scale);
+        reticle.matrix.decompose(
+            asteroidMesh.position,
+            asteroidMesh.quaternion,
+            asteroidMesh.scale,
+        );
 
         const scale = 0.25;
-        mesh.scale.set(scale, scale, scale);
-        mesh.position.y += 0.5;
-        scene.add(mesh);
-    } else {
+        asteroidMesh.scale.set(scale, scale, scale);
+        asteroidMesh.position.y += 0.5;
+        scene.add(asteroidMesh);
+    }
+
+    function replaceButton() {
+        function onIntersection() {
+            const hitButton = intersects[0].object;
+            // Remove the hit button
+            scene.remove(hitButton);
+            const index = buttonMeshes.indexOf(hitButton);
+            if (index > -1) {
+                buttonMeshes.splice(index, 1);
+            }
+            log(`Button removed! Spawning new one.`);
+            // Spawn a new button at random position
+            spawnRandomButton();
+        }
+
         const tempMatrix = new THREE.Matrix4();
         tempMatrix.identity().extractRotation(controller.matrixWorld);
 
@@ -74,23 +93,40 @@ function onSelect() {
             raycaster.ray.direction,
             raycaster.ray.origin,
             1,
-            0x00ff00
+            0x00ff00,
         );
 
         scene.add(arrow);
 
         const intersects = raycaster.intersectObject(buttonMesh);
         log(`Ray Casting!\nLength: ${intersects.length}`);
-        if (intersects.length > 0) {
-            log(`TRIGGERED!`);
-        }
+        if (intersects.length > 0) onIntersection();
     }
+
+    if (reticle.visible && asteroidGltf) addAsteroid();
+    else replaceButton();
 }
 
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function spawnRandomButton() {
+    const button = getAsteroidButton();
+    const position = new THREE.Vector3();
+    reticle.matrix.decompose(
+        position,
+        new THREE.Quaternion(),
+        new THREE.Vector3(),
+    );
+    position.x += (Math.random() - 0.5) * 2; // Random x offset -1 to 1
+    position.z += (Math.random() - 0.5) * 2; // Random z offset -1 to 1
+    button.position.copy(position);
+    button.rotateX(Math.PI / 2); // Make it horizontal
+    scene.add(button);
+    buttonMeshes.push(button);
 }
 
 // MAIN FUNCTIONS
@@ -111,23 +147,6 @@ function init() {
 
     const loader = new GLTFLoader();
     loader.load("psyche.glb", (gltf) => {
-        function getAsteroidButton() {
-            const buttonMesh = new THREE.Mesh(
-                new THREE.PlaneGeometry(0.2, 0.2),
-                new THREE.MeshBasicMaterial({
-                    color: 0xff0000,
-                    side: THREE.DoubleSide,
-                })
-            );
-            buttonMesh.position.set(
-                0,
-                box.getSize(new THREE.Vector3()).y / 2,
-                0
-            );
-            buttonMesh.rotateX(Math.PI / 2);
-            return buttonMesh;
-        }
-
         // Center asteroid
         const tempGltf = gltf.scene;
         const box = new THREE.Box3().setFromObject(tempGltf);
@@ -135,15 +154,11 @@ function init() {
         const modelWrapper = new THREE.Object3D();
         tempGltf.position.sub(center);
         modelWrapper.add(tempGltf);
-
-        // Create button on asteroid
-        buttonMesh = getAsteroidButton();
-        if (buttonMesh) modelWrapper.add(buttonMesh);
-
         // Assign result
         asteroidGltf = modelWrapper;
     });
 
+    spawnRandomButton();
     container.appendChild(renderer.domElement);
     document.body.appendChild(getARButton(renderer));
     window.addEventListener("resize", onWindowResize);
@@ -182,12 +197,19 @@ function render(timestamp, frame) {
                         "none";
                     document.getElementById("instructions").style.display =
                         "flex";
+                    // Spawn initial buttons
+                    if (!buttonsSpawned) {
+                        for (let i = 0; i < MAX_BUTTONS; i++) {
+                            spawnRandomButton();
+                        }
+                        buttonsSpawned = true;
+                    }
                 }
                 const hit = hitTestResults[0];
                 if (spawnTracker < MAX_SPAWN) {
                     reticle.visible = true;
                     reticle.matrix.fromArray(
-                        hit.getPose(referenceSpace).transform.matrix
+                        hit.getPose(referenceSpace).transform.matrix,
                     );
                 }
             } else {

@@ -57,6 +57,16 @@ export function getRecticle() {
     return reticle;
 }
 
+export function getAsteroidButton() {
+    return new THREE.Mesh(
+        new THREE.PlaneGeometry(0.2, 0.2),
+        new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            side: THREE.DoubleSide,
+        }),
+    );
+}
+
 // function getAsteroidButton() {
 //     const buttonMesh = new THREE.Mesh(
 //         new THREE.PlaneGeometry(0.2, 0.2),
