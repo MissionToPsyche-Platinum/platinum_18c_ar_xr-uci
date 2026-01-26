@@ -59,7 +59,7 @@ export function getRecticle() {
 
 export function getAsteroidButton() {
     return new THREE.Mesh(
-        new THREE.PlaneGeometry(0.2, 0.2),
+        new THREE.CircleGeometry(0.05, 64),
         new THREE.MeshBasicMaterial({
             color: 0xff0000,
             side: THREE.DoubleSide,

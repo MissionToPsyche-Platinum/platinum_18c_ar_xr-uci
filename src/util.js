@@ -1,3 +1,7 @@
+let counter = 0;
+
 export function log(text) {
-    document.getElementById("log").innerText = text;
+    const log = document.getElementById("log")
+    log.innerText += `${counter++}. ${text}\n`;
+    log.scrollTop = log.scrollHeight;
 }

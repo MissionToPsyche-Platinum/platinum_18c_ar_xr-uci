@@ -19,7 +19,7 @@ let container;
 let camera, scene, renderer;
 let controller;
 
-const MAX_BUTTONS = 5;
+const MAX_BUTTONS = 10;
 let buttonMeshes = [];
 let buttonsSpawned = false;
 
@@ -30,6 +30,7 @@ let hitTestSourceRequested = false;
 let planeFound = false;
 
 let asteroidGltf;
+let asteroidSpawned = false;
 
 // check for webxr session support
 if ("xr" in navigator) {
@@ -43,6 +44,14 @@ if ("xr" in navigator) {
     });
 }
 
+function isReady(name, model) {
+    if (!model) {
+        log(`${name} is not ready`);
+        return false;
+    }
+    return true;
+}
+
 // CALLBACKS
 function sessionStart() {
     planeFound = false;
@@ -51,34 +60,36 @@ function sessionStart() {
 }
 
 function onSelect() {
-    log(`spawnTracker: ${spawnTracker}\nMAX_SPAWN: ${MAX_SPAWN}`);
-
     function addAsteroid() {
-        const asteroidMesh = asteroidGltf;
+        if (!isReady("Asteroid", asteroidGltf)) return;
 
         reticle.matrix.decompose(
-            asteroidMesh.position,
-            asteroidMesh.quaternion,
-            asteroidMesh.scale,
+            asteroidGltf.position,
+            asteroidGltf.quaternion,
+            asteroidGltf.scale,
         );
 
         const scale = 0.25;
-        asteroidMesh.scale.set(scale, scale, scale);
-        asteroidMesh.position.y += 0.5;
-        scene.add(asteroidMesh);
+        asteroidGltf.scale.set(scale, scale, scale);
+        asteroidGltf.position.y += 0.5;
+        asteroidGltf.updateWorldMatrix(true, true);
+        const boxHelper = new THREE.BoxHelper(asteroidGltf, 0xff0000); // red
+        scene.add(boxHelper);
+        scene.add(asteroidGltf);
+        asteroidSpawned = true;
+        log("Asteroid Added");
     }
 
     function replaceButton() {
+        log("replaceButton activated!");
         function onIntersection() {
             const hitButton = intersects[0].object;
-            // Remove the hit button
+            // // Remove the hit button
             scene.remove(hitButton);
             const index = buttonMeshes.indexOf(hitButton);
-            if (index > -1) {
-                buttonMeshes.splice(index, 1);
-            }
+            if (index > -1) buttonMeshes.splice(index, 1);
             log(`Button removed! Spawning new one.`);
-            // Spawn a new button at random position
+            // // Spawn a new button at random position
             spawnRandomButton();
         }
 
@@ -98,12 +109,12 @@ function onSelect() {
 
         scene.add(arrow);
 
-        const intersects = raycaster.intersectObject(buttonMesh);
-        log(`Ray Casting!\nLength: ${intersects.length}`);
+        const intersects = raycaster.intersectObjects(buttonMeshes);
+        log(`Ray Casted!\nLength: ${intersects.length}`);
         if (intersects.length > 0) onIntersection();
     }
 
-    if (reticle.visible && asteroidGltf) addAsteroid();
+    if (!asteroidSpawned) addAsteroid();
     else replaceButton();
 }
 
@@ -114,19 +125,48 @@ function onWindowResize() {
 }
 
 function spawnRandomButton() {
+    if (!isReady("Asteroid", asteroidGltf)) return false;
     const button = getAsteroidButton();
-    const position = new THREE.Vector3();
-    reticle.matrix.decompose(
-        position,
-        new THREE.Quaternion(),
-        new THREE.Vector3(),
+
+    // Update world matrix to reflect any scale changes
+    asteroidGltf.updateMatrixWorld(true);
+
+    // Get asteroid's world position
+    const asteroidWorldPos = new THREE.Vector3();
+    asteroidGltf.getWorldPosition(asteroidWorldPos);
+
+    // Ellipsoid scale factors
+    const radiusX = 0.35;
+    const radiusY = 0.275;
+    const radiusZ = 0.35;
+
+    // Generate random point on ellipsoid surface
+    const phi = Math.random() * Math.PI * 2;
+    const theta = Math.acos(Math.random() * 2 - 1);
+
+    // Parametric ellipsoid surface
+    const randomPosition = new THREE.Vector3(
+        radiusX * Math.sin(theta) * Math.cos(phi),
+        radiusY * Math.sin(theta) * Math.sin(phi),
+        radiusZ * Math.cos(theta),
     );
-    position.x += (Math.random() - 0.5) * 2; // Random x offset -1 to 1
-    position.z += (Math.random() - 0.5) * 2; // Random z offset -1 to 1
-    button.position.copy(position);
-    button.rotateX(Math.PI / 2); // Make it horizontal
+
+    // Add asteroid's world position
+    randomPosition.add(asteroidWorldPos);
+
+    button.position.copy(randomPosition);
+
+    // Orient button to face outward from asteroid center
+    const outwardDirection = randomPosition
+        .clone()
+        .sub(asteroidWorldPos)
+        .normalize();
+    button.lookAt(randomPosition.clone().add(outwardDirection));
+
     scene.add(button);
     buttonMeshes.push(button);
+    log("Button spawned on ellipsoid surface.");
+    return true;
 }
 
 // MAIN FUNCTIONS
@@ -158,7 +198,7 @@ function init() {
         asteroidGltf = modelWrapper;
     });
 
-    spawnRandomButton();
+    // spawnRandomButton();
     container.appendChild(renderer.domElement);
     document.body.appendChild(getARButton(renderer));
     window.addEventListener("resize", onWindowResize);
@@ -197,16 +237,15 @@ function render(timestamp, frame) {
                         "none";
                     document.getElementById("instructions").style.display =
                         "flex";
-                    // Spawn initial buttons
-                    if (!buttonsSpawned) {
-                        for (let i = 0; i < MAX_BUTTONS; i++) {
-                            spawnRandomButton();
-                        }
-                        buttonsSpawned = true;
+                }
+                // Spawn initial buttons after asteroid is spawned
+                if (asteroidSpawned && !buttonsSpawned) {
+                    for (let i = 0; i < MAX_BUTTONS; i++) {
+                        if (spawnRandomButton()) buttonsSpawned = true;
                     }
                 }
                 const hit = hitTestResults[0];
-                if (spawnTracker < MAX_SPAWN) {
+                if (!asteroidSpawned) {
                     reticle.visible = true;
                     reticle.matrix.fromArray(
                         hit.getPose(referenceSpace).transform.matrix,
