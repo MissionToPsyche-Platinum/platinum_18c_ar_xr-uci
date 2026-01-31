@@ -9,7 +9,7 @@ export function getCamera() {
         70,
         window.innerWidth / window.innerHeight,
         0.01,
-        20
+        20,
     );
 }
 
@@ -50,21 +50,53 @@ export function getController(renderer, onSelect) {
 export function getRecticle() {
     const reticle = new THREE.Mesh(
         new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
-        new THREE.MeshBasicMaterial()
+        new THREE.MeshBasicMaterial(),
     );
     reticle.matrixAutoUpdate = false;
     reticle.visible = false;
     return reticle;
 }
 
-export function getAsteroidButton() {
-    return new THREE.Mesh(
-        new THREE.CircleGeometry(0.05, 64),
-        new THREE.MeshBasicMaterial({
-            color: 0xff0000,
-            side: THREE.DoubleSide,
-        }),
-    );
+class AsteroidButton {
+    constructor(color) {
+        this.mesh = new THREE.Mesh(
+            new THREE.CircleGeometry(0.05, 64),
+            new THREE.MeshBasicMaterial({
+                color: color,
+                side: THREE.DoubleSide,
+            }),
+        );
+    }
+
+    onSelect() {
+        // TODO: +1 Resource
+    }
+}
+
+export class SingleClickAsteroidButton extends AsteroidButton {
+    constructor() {
+        super(0xff0000);
+    }
+
+    onSelect() {
+        log("SingleClick");
+    }
+}
+
+export class MultiClickAsteroidButton extends AsteroidButton {
+    constructor() {
+        super(0x00ff00);
+    }
+
+    onSelect() {
+        log("MultiClick");
+    }
+}
+
+export function getRandomAsteroidButton(multiClickButtonsRate) {
+    if (Math.random() <= multiClickButtonsRate)
+        return new MultiClickAsteroidButton();
+    return new SingleClickAsteroidButton();
 }
 
 // function getAsteroidButton() {
