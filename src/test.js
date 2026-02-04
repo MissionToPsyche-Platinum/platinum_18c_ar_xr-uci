@@ -12,11 +12,9 @@ import {
     getRandomAsteroidButton,
     MultiClickAsteroidButton,
 } from "./components.js";
-import { addResources, log } from "./util.js";
+import { addResources, log, DEBUG } from "./util.js";
 import "./qr.js";
 import "./style.css";
-
-const DEBUG = false;
 
 let container;
 let camera, scene, renderer;
@@ -81,11 +79,14 @@ function onSelect() {
         asteroidGltf.scale.set(scale, scale, scale);
         asteroidGltf.position.y += 0.5;
         asteroidGltf.updateWorldMatrix(true, true);
-        const boxHelper = new THREE.BoxHelper(asteroidGltf, 0xff0000); // red
-        scene.add(boxHelper);
         scene.add(asteroidGltf);
         asteroidSpawned = true;
         log("Asteroid Added");
+
+        if (DEBUG) {
+            const boxHelper = new THREE.BoxHelper(asteroidGltf, 0xff0000); // red
+            scene.add(boxHelper);
+        }
     }
 
     function replaceButton() {
