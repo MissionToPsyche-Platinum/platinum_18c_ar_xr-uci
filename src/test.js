@@ -104,14 +104,6 @@ function onSelect() {
 
 		asteroidSpawned = true;
 		log("Asteroid Added");
-	}
-        const scale = 0.25;
-        asteroidGltf.scale.set(scale, scale, scale);
-        asteroidGltf.position.y += 0.5;
-        asteroidGltf.updateWorldMatrix(true, true);
-        scene.add(asteroidGltf);
-        asteroidSpawned = true;
-        log("Asteroid Added");
 
         if (DEBUG) {
             const boxHelper = new THREE.BoxHelper(asteroidGltf, 0xff0000); // red
@@ -189,7 +181,8 @@ function onSelect() {
 
 		const intersects = raycaster.intersectObjects(
 			buttons.map((button) => button.mesh),
-		);
+        );
+        
 		log(`Ray Casted!\nLength: ${intersects.length}`);
 		if (intersects.length > 0) onIntersection();
 	}
@@ -337,7 +330,7 @@ function render(timestamp, frame) {
 
 	// Rotate asteroid if spawned
 	if (asteroidSpawned && asteroidGltf) {
-		asteroidGltf.rotation.y += asteroidRotationSpeed;
+		asteroidGltf.rotation.x += asteroidRotationSpeed;
 	}
 
 	renderer.render(scene, camera);
