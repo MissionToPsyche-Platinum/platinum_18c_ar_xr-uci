@@ -205,9 +205,9 @@ function spawnRandomButton() {
 	const buttonMesh = button.mesh;
 
 	// LOCAL ellipsoid radii
-	const radiusX = 1.4;
-	const radiusY = 1.1;
-	const radiusZ = 1.3;
+	const radiusX = 1.45;
+	const radiusY = 1.15;
+	const radiusZ = 1.35;
 
 	// Random direction on unit sphere
 	const dir = new THREE.Vector3(
@@ -226,15 +226,8 @@ function spawnRandomButton() {
 	// Apply local position
 	buttonMesh.position.copy(localPosition);
 
-	// Adjust button size
-	buttonMesh.scale.setScalar(2);
-
-	// Face outward
-	buttonMesh.lookAt(localPosition.clone().multiplyScalar(2));
-
 	// attach to ASTEROID
 	asteroidGltf.add(buttonMesh);
-
 	buttons.push(button);
 	log("Button spawned (local, asteroid child)");
 
