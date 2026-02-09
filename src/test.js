@@ -81,35 +81,35 @@ function onSelect() {
 		asteroidGltf.updateWorldMatrix(true, true);
 		scene.add(asteroidGltf);
 
-		// DEBUG: hard-coded blue button attached to asteroid
-		const buttonGeometry = new THREE.SphereGeometry(0.15, 16, 16);
-		const buttonMaterial = new THREE.MeshBasicMaterial({
-			color: 0xff00ff, // hot pink
-		});
+		// DEBUG: hard-coded pink button attached to asteroid
+		// const buttonGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+		// const buttonMaterial = new THREE.MeshBasicMaterial({
+		// 	color: 0xff00ff, // hot pink
+		// });
 
-		const debugButton = new THREE.Mesh(buttonGeometry, buttonMaterial);
-		const surfaceRadius = 1.2;
+		// const debugButton = new THREE.Mesh(buttonGeometry, buttonMaterial);
+		// const surfaceRadius = 1.2;
 
-		// Any direction you want
-		const dir = new THREE.Vector3(0.6, 0.3, 0.7).normalize();
+		// // Any direction you want
+		// const dir = new THREE.Vector3(0.6, 0.3, 0.7).normalize();
 
-		// Place on ellipsoid surface
-		debugButton.position.set(0, 0, 1.5);
+		// // Place on ellipsoid surface
+		// debugButton.position.set(0, 0, 1.5);
 
-		// Place on surface
-		debugButton.position.copy(dir.multiplyScalar(surfaceRadius));
+		// // Place on surface
+		// debugButton.position.copy(dir.multiplyScalar(surfaceRadius));
 
-		debugButton.lookAt(debugButton.position.clone().multiplyScalar(2));
-		asteroidGltf.add(debugButton);
+		// debugButton.lookAt(debugButton.position.clone().multiplyScalar(2));
+		// asteroidGltf.add(debugButton);
 
 		asteroidSpawned = true;
 		log("Asteroid Added");
 
-        if (DEBUG) {
-            const boxHelper = new THREE.BoxHelper(asteroidGltf, 0xff0000); // red
-            scene.add(boxHelper);
-        }
-    }
+		if (DEBUG) {
+			const boxHelper = new THREE.BoxHelper(asteroidGltf, 0xff0000); // red
+			scene.add(boxHelper);
+		}
+	}
 
 	function replaceButton() {
 		log("replaceButton activated!");
@@ -181,8 +181,8 @@ function onSelect() {
 
 		const intersects = raycaster.intersectObjects(
 			buttons.map((button) => button.mesh),
-        );
-        
+		);
+
 		log(`Ray Casted!\nLength: ${intersects.length}`);
 		if (intersects.length > 0) onIntersection();
 	}
@@ -199,46 +199,45 @@ function onWindowResize() {
 
 function spawnRandomButton() {
 	if (!isReady("Asteroid", asteroidGltf)) return false;
+
+	log("Spawning button...");
 	const button = getRandomAsteroidButton(multiClickButtonsRate);
 	const buttonMesh = button.mesh;
 
-	// Update world matrix to reflect any scale changes
-	asteroidGltf.updateMatrixWorld(true);
-
-	// Get asteroid's world position
-	const asteroidWorldPos = new THREE.Vector3();
-	asteroidGltf.getWorldPosition(asteroidWorldPos);
-
-	// Ellipsoid scale factors
+	// LOCAL ellipsoid radii
 	const radiusX = 1.4;
 	const radiusY = 1.1;
 	const radiusZ = 1.3;
 
-	// Generate random point on ellipsoid surface
-	const phi = Math.random() * Math.PI * 2;
-	const theta = Math.acos(Math.random() * 2 - 1);
+	// Random direction on unit sphere
+	const dir = new THREE.Vector3(
+		Math.random() * 2 - 1,
+		Math.random() * 2 - 1,
+		Math.random() * 2 - 1,
+	).normalize();
 
-	// Parametric ellipsoid surface
-	const randomPosition = new THREE.Vector3(
-		radiusX * Math.sin(theta) * Math.cos(phi),
-		radiusY * Math.sin(theta) * Math.sin(phi),
-		radiusZ * Math.cos(theta),
+	// Project direction onto ellipsoid surface
+	const localPosition = new THREE.Vector3(
+		dir.x * radiusX,
+		dir.y * radiusY,
+		dir.z * radiusZ,
 	);
 
-	// Add asteroid's world position
-	randomPosition.add(asteroidWorldPos);
-	buttonMesh.position.copy(randomPosition);
+	// Apply local position
+	buttonMesh.position.copy(localPosition);
 
-	// Orient button to face outward from asteroid center
-	const outwardDirection = randomPosition
-		.clone()
-		.sub(asteroidWorldPos)
-		.normalize();
-	buttonMesh.lookAt(randomPosition.clone().add(outwardDirection));
+	// Adjust button size
+	buttonMesh.scale.setScalar(2);
 
-	scene.add(buttonMesh);
+	// Face outward
+	buttonMesh.lookAt(localPosition.clone().multiplyScalar(2));
+
+	// attach to ASTEROID
+	asteroidGltf.add(buttonMesh);
+
 	buttons.push(button);
-	log("Button spawned on ellipsoid surface.");
+	log("Button spawned (local, asteroid child)");
+
 	return true;
 }
 
@@ -310,11 +309,11 @@ function render(timestamp, frame) {
 					document.getElementById("instructions").style.display = "flex";
 				}
 				// Spawn initial buttons after asteroid is spawned
-				// if (asteroidSpawned && !buttonsSpawned) {
-				// 	for (let i = 0; i < MAX_BUTTONS; i++) {
-				// 		if (spawnRandomButton()) buttonsSpawned = true;
-				// 	}
-				// }
+				if (asteroidSpawned && !buttonsSpawned) {
+					for (let i = 0; i < MAX_BUTTONS; i++) {
+						if (spawnRandomButton()) buttonsSpawned = true;
+					}
+				}
 				const hit = hitTestResults[0];
 				if (!asteroidSpawned) {
 					reticle.visible = true;
