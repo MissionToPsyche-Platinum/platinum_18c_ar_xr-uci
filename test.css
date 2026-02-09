@@ -1,0 +1,40 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0px;
+}
+
+.milestones-container {
+    height: 100%;
+    border: 1px solid green;
+}
+
+.milestones {
+    border: 1px solid red;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 5dvw;
+    min-height: inherit;
+    padding: 5px;
+}
+
+.milestones-button {
+    height: 10dvw;
+    width: 10dvw;
+    border-radius: 100%;
+}
+
+.milestones-tracker {
+    position: absolute;
+    background-color: red;
+    bottom: 0px;
+    height: 200px;
+    border: 1px dashed blue;
+    width: inherit;
+    z-index: -1;
+}
