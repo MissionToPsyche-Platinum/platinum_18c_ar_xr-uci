@@ -3,17 +3,36 @@
 }
 
 body {
-    min-height: 100vh;
+    min-height: 100dvh;
     margin: 0px;
 }
 
+body > div {
+    border: 1px solid pink;
+    display: flex;
+}
+
+.information {
+    flex-direction: column;
+    line-height: 0;
+    align-items: center;
+}
+
+.main {
+    align-items: stretch;
+    margin: 5dvw;
+    gap: 5dvw;
+}
+
 .milestones-container {
-    height: 100%;
-    border: 1px solid green;
+    min-height: 80dvh;
+    width: fit-content;
+    position: relative;
 }
 
 .milestones {
-    border: 1px solid red;
+    background-color: gray;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -26,15 +45,73 @@ body {
 .milestones-button {
     height: 10dvw;
     width: 10dvw;
+    border: 0px;
     border-radius: 100%;
+    background-color: green;
+    z-index: 1;
 }
 
 .milestones-tracker {
     position: absolute;
-    background-color: red;
+    background-color: lightgreen;
+    border-radius: 0px 0px 10px 10px;
     bottom: 0px;
-    height: 200px;
-    border: 1px dashed blue;
+    height: 250px;
     width: inherit;
-    z-index: -1;
+}
+
+.pop-up {
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid darkmagenta;
+    background-color: rgba(146, 12, 113, 0.644);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.pop-up-text {
+    overflow-y: auto;
+    max-height: 60dvh;
+    padding: 5px;
+}
+
+.pop-up-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pop-up-upgrade-box {
+    width: 50px;
+    height: 50px;
+    background-color: gray;
+    margin: 10px 0px;
+}
+
+.pop-up-upgrade {
+    line-height: 0;
+}
+
+.upgrades {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 10px;
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+}
+
+.upgrade-options {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.upgrade-trigger {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    
 }
