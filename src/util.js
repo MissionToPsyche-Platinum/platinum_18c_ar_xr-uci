@@ -1,5 +1,5 @@
 let counter = 0;
-export const DEBUG = false;
+export const DEBUG = true;
 
 export function log(text) {
     if (DEBUG) {
