@@ -225,8 +225,8 @@ function spawnRandomButton() {
   const buttonMesh = button.mesh;
 
   // LOCAL ellipsoid radii
-  const radiusX = 1.35;
-  const radiusY = 1.275;
+  const radiusX = 1.5;
+  const radiusY = 1.15;
   const radiusZ = 1.35;
 
   // Random direction on unit sphere
@@ -243,14 +243,9 @@ function spawnRandomButton() {
     dir.z * radiusZ,
   );
 
-  if (DEBUG) {
-    const geometry = new THREE.SphereGeometry(0.1);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const helper = new THREE.Mesh(geometry, material);
-
-    helper.position.copy(localPosition);
-    asteroidGltf.add(helper);
-  }
+  // Sink slightly INTO the asteroid
+  const inset = 0.08;
+  localPosition.addScaledVector(dir, -inset);
 
   // Apply local position
   buttonMesh.position.copy(localPosition);
