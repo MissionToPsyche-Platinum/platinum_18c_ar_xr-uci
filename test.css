@@ -3,29 +3,33 @@
 }
 
 body {
-    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
     margin: 0px;
 }
 
 body > div {
-    border: 1px solid pink;
     display: flex;
 }
 
 .information {
-    flex-direction: column;
+    justify-content: space-around;
     line-height: 0;
     align-items: center;
+    font-size: small;
 }
 
 .main {
+    flex: 1;
     align-items: stretch;
     margin: 5dvw;
     gap: 5dvw;
+    
 }
 
 .milestones-container {
-    min-height: 80dvh;
+    height: 100%;
     width: fit-content;
     position: relative;
 }
@@ -38,7 +42,7 @@ body > div {
     justify-content: space-between;
     flex-direction: column;
     width: 5dvw;
-    min-height: inherit;
+    min-height: 100%;
     padding: 5px;
 }
 
@@ -63,16 +67,20 @@ body > div {
 .pop-up {
     padding: 10px;
     border-radius: 10px;
-    border: 2px solid darkmagenta;
     background-color: rgba(146, 12, 113, 0.644);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
+.pop-up-content {
+    flex: 1
+}
+
 .pop-up-text {
+    flex: 1;
     overflow-y: auto;
-    max-height: 60dvh;
+    max-height: 50dvh;
     padding: 5px;
 }
 
@@ -113,5 +121,4 @@ body > div {
     width: 50px;
     height: 50px;
     border-radius: 100%;
-    
 }
