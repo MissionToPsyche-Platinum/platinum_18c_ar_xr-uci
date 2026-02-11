@@ -36,7 +36,7 @@ let planeFound = false;
 
 let asteroidGltf;
 let asteroidSpawned = false;
-let asteroidRotationSpeed = 0.002;
+let asteroidRotationSpeed = 0.004;
 
 // check for webxr session support
 if ("xr" in navigator) {
@@ -223,6 +223,9 @@ function spawnRandomButton() {
   log("Spawning button...");
   const button = getRandomAsteroidButton(multiClickButtonsRate);
   const buttonMesh = button.mesh;
+
+  // Change size button
+  buttonMesh.scale.setScalar(1.2);
 
   // LOCAL ellipsoid radii
   const radiusX = 1.5;
