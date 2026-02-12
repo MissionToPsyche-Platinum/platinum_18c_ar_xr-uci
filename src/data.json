@@ -1,25 +1,25 @@
 [{
         "title": "M1",
-        "content": "TEXT"
+        "text": "TEXT"
     },
     {
         "title": "M2",
-        "content": "TEXT"
+        "text": "TEXT"
     },
     {
         "title": "M3",
-        "content": "TEXT"
+        "text": "TEXT"
     },
     {
         "title": "M4",
-        "content": "TEXT"
+        "text": "TEXT"
     },
     {
         "title": "M5",
-        "content": "TEXT"
+        "text": "TEXT"
     },
     {
         "title": "M6",
-        "content": "TEXT"
+        "text": "TEXT"
     }
 ]

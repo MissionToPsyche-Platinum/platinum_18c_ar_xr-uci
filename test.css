@@ -35,7 +35,7 @@ body > div {
 }
 
 .milestones {
-    background-color: gray;
+    background-color: darkgray;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -51,7 +51,7 @@ body > div {
     width: 10dvw;
     border: 0px;
     border-radius: 100%;
-    background-color: green;
+    background-color: gray;
     z-index: 1;
 }
 
@@ -71,6 +71,7 @@ body > div {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex: 1;
 }
 
 .pop-up-content {
@@ -107,8 +108,8 @@ body > div {
     align-items: end;
     gap: 10px;
     position: fixed;
-    bottom: 5px;
-    right: 5px;
+    bottom: 5dvw;
+    right: 5dvw;
 }
 
 .upgrade-options {

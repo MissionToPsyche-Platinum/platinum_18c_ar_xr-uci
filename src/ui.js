@@ -1,27 +1,54 @@
 import $ from "jquery";
 import data from "./data.json";
 
-
 document.addEventListener("DOMContentLoaded", function () {
-    const TARGET = 1000
-    const unit = $(".milestones").height() / TARGET
+    const TARGET = 1200;
+    const unit = $(".milestones").height() / TARGET;
 
-    data.forEach(() => {
-        $(".milestones").prepend('<button class="milestone-button"></button>')
-    })
+    let minute = 0;
+    let second = 0;
 
-    $(".milestone-button").on("click", function () {
-        $(".pop-up").toggle()
+    setInterval(() => {
+        if (second >= 60) {
+            minute++;
+            second = 0;
+        } else {
+            second++;
+        }
+
+        $(".timer").text(`${minute}:${String(second).padStart(2, "0")}`);
+    }, 1000);
+
+    data.forEach((_, i) => {
+        $(".milestones").prepend(
+            `<button class="milestone-button" id="${i}"></button>`,
+        );
     });
 
-    $(".milestones-tracker").height(unit * 200)
+    $(".pop-up").hide();
+    $(".upgrade-options").hide();
 
-    $(".pop-up-close-button").on("click"), function () {
-        $(".pop-up").hide()
-    }
+    $(".milestone-button").on("click", function () {
+        const index = this.id;
+        $(".pop-up-title").text(data[index].title);
+        $(".pop-up-text").text(data[index].text);
+        $(".pop-up").toggle();
+    });
+
+    $(".pop-up-close-button").on("click", function () {
+        $(".pop-up").hide();
+    });
 
     $(".upgrade-trigger").on("click", function () {
-        $(".upgrade-options").toggle()
-    })
+        $(".upgrade-options").toggle();
+    });
 
+    const RESOURCES = 800;
+    $(".milestones-tracker").height(unit * RESOURCES);
+    data.forEach((_, i) => {
+        const localTarget = (TARGET / data.length) * (i + 1);
+        if (RESOURCES >= localTarget) {
+            $(`.milestone-button#${i}`).css("background-color", "darkgreen");
+        }
+    });
 });
