@@ -2,42 +2,43 @@
     box-sizing: border-box;
 }
 
-body {
-    display: flex;
+#hud {
+    position: fixed;
     flex-direction: column;
+    width: 100dvw;
     height: 100dvh;
-    margin: 0px;
+    display: flex;
+    top: 0;
+    left: 0;
 }
 
-body > div {
+#hud div {
     display: flex;
 }
 
-.information {
+#information {
     justify-content: space-around;
     line-height: 0;
     align-items: center;
-    font-size: small;
+    font-size: 8px;
 }
 
-.main {
+#main {
     flex: 1;
     align-items: stretch;
     margin: 5dvw;
     gap: 5dvw;
-    
 }
 
-.milestones-container {
+#milestones-container {
     height: 100%;
     width: fit-content;
     position: relative;
 }
 
-.milestones {
+#milestones {
     background-color: darkgray;
     border-radius: 10px;
-    display: flex;
     align-items: center;
     justify-content: space-between;
     flex-direction: column;
@@ -55,55 +56,53 @@ body > div {
     z-index: 1;
 }
 
-.milestones-tracker {
+#milestones-tracker {
     position: absolute;
     background-color: lightgreen;
     border-radius: 0px 0px 10px 10px;
     bottom: 0px;
-    height: 250px;
+    height: 0px;
     width: inherit;
 }
 
-.pop-up {
+#pop-up {
     padding: 10px;
     border-radius: 10px;
-    background-color: rgba(146, 12, 113, 0.644);
-    display: flex;
+    background-color: rgba(146, 12, 113, 0.75);
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
 }
 
-.pop-up-content {
-    flex: 1
+#pop-up-content {
+    flex-direction: column;
+    flex: 1;
 }
 
-.pop-up-text {
+#pop-up-text {
     flex: 1;
     overflow-y: auto;
     max-height: 50dvh;
     padding: 5px;
 }
 
-.pop-up-info {
-    display: flex;
+#pop-up-info {
     flex-direction: column;
     align-items: center;
 }
 
-.pop-up-upgrade-box {
+#pop-up-upgrade-box {
     width: 50px;
     height: 50px;
     background-color: gray;
     margin: 10px 0px;
 }
 
-.pop-up-upgrade {
+#pop-up-upgrade {
     line-height: 0;
 }
 
-.upgrades {
-    display: flex;
+#upgrades {
     flex-direction: column;
     align-items: end;
     gap: 10px;
@@ -112,13 +111,12 @@ body > div {
     right: 5dvw;
 }
 
-.upgrade-options {
-    display: flex;
+#upgrade-options {
     flex-direction: column;
     gap: 5px;
 }
 
-.upgrade-trigger {
+#upgrade-trigger {
     width: 50px;
     height: 50px;
     border-radius: 100%;

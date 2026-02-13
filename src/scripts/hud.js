@@ -1,9 +1,17 @@
 import $ from "jquery";
 import data from "../data/data.json";
+import { log } from "./util";
 
-const TARGET = 12;
+const TARGET = 120;
 
 document.addEventListener("DOMContentLoaded", function () {
+    $("#hud").hide();
+});
+
+export function initiateHUD() {
+    $("#hud").show();
+    $("#instructions").hide();
+
     let minute = 0;
     let second = 0;
     let timerId = null;
@@ -33,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     data.forEach((_, i) => {
-        $(".milestones").prepend(
+        $("#milestones").prepend(
             `<button class="milestone-button" id="${i}"></button>`,
         );
     });
@@ -45,39 +53,43 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    $(".pop-up").hide();
-    $(".upgrade-options").hide();
+    $("#pop-up").hide();
+    $("#upgrade-options").hide();
 
-    $(".pop-up-close-button").on("click", function () {
-        $(".pop-up").hide();
+    $("#pop-up-close-button").on("click", function () {
+        $("#pop-up").hide();
     });
 
-    $(".upgrade-trigger").on("click", function () {
-        $(".upgrade-options").toggle();
-        addResources(1);
+    $("#upgrade-trigger").on("click", function () {
+        $("#upgrade-options").toggle();
     });
-});
+}
 
 export function addResources(cnt) {
-    const currCnt = Number($(".resources").text());
-    const unit = $(".milestones").height() / TARGET;
+    const currCnt = Number($("#resources").text());
+    const unit = $("#milestones").height() / TARGET;
     const resources = currCnt + cnt;
 
-    console.log(currCnt, resources);
-
-    $(".milestone-button").off();
-    $(".resources").text(resources);
-    $(".milestones-tracker").height(unit * resources);
+    $("#resources").text(resources);
+    $("#milestones-tracker").height(unit * Math.min(resources, TARGET));
     data.forEach((_, i) => {
+        function initiatePopUp(index) {
+            $("#pop-up-title").text(data[index].title);
+            $("#pop-up-text").text(data[index].text);
+        }
+
+        $(`.milestone-button#${i}`).off("click");
         const localTarget = (TARGET / data.length) * (i + 1);
         if (resources >= localTarget) {
             $(`.milestone-button#${i}`).css("background-color", "darkgreen");
             $(`.milestone-button#${i}`).on("click", function () {
-                const index = this.id;
-                $(".pop-up-title").text(data[index].title);
-                $(".pop-up-text").text(data[index].text);
-                $(".pop-up").toggle();
+                initiatePopUp(i);
+                $("#pop-up").toggle();
             });
+            if (resources === localTarget) {
+                initiatePopUp(i);
+                $("#pop-up").show();
+            }
         } else {
             $(`.milestone-button#${i}`).on("click", function () {
                 alert(

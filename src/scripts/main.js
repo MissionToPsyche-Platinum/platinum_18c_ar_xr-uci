@@ -12,11 +12,14 @@ import {
     getRandomAsteroidButton,
     MultiClickAsteroidButton,
 } from "./components.js";
-import { addResources, log, DEBUG } from "./util.js";
+import { log, DEBUG } from "./util.js";
+import { addResources, initiateHUD } from "./hud.js";
 import "./qr.js";
 
+import $ from "jquery";
+
 import "../styles/index.css";
-import "../styles/overlay.css";
+import "../styles/hud.css";
 
 let container;
 let camera, scene, renderer;
@@ -26,8 +29,6 @@ const MAX_BUTTONS = 10;
 let multiClickButtonsRate = 0.5;
 let buttons = [];
 let triggeredButtons = [];
-
-let buttonMeshes = [];
 let buttonsSpawned = false;
 
 let reticle;
@@ -328,14 +329,12 @@ function render(timestamp, frame) {
             if (hitTestResults.length) {
                 if (!planeFound) {
                     planeFound = true;
-                    //hide #tracking-prompt
-                    document.getElementById("tracking-prompt").style.display =
-                        "none";
-                    document.getElementById("instructions").style.display =
-                        "flex";
+                    $("#tracking-prompt").hide();
+                    $("#instructions").show();
                 }
                 // Spawn initial buttons after asteroid is spawned
                 if (asteroidSpawned && !buttonsSpawned) {
+                    initiateHUD();
                     for (let i = 0; i < MAX_BUTTONS; i++) {
                         if (spawnRandomButton()) buttonsSpawned = true;
                     }

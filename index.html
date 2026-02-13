@@ -4,6 +4,7 @@
         <title>Variant Launch ThreeJS Example</title>
 
         <!-- REPLACE WITH YOUR SDK KEY TAG FROM https://launchar.app -->
+        <script src="https://launchar.app/sdk/v1?key=WElBW0zX734QzPBj7c2TsUE1xV6vK4YY&redirect=true"></script>
         <!-- / REPLACE WITH YOUR SDK KEY TAG FROM https://launchar.app -->
 
         <link
@@ -20,40 +21,39 @@
     <body>
         <div id="overlay">
             <div id="log-display"></div>
-            <div id="resource-display">
-                Resources: <span id="resource-counter">0</span>
-            </div>
-            <div id="tracking-prompt"><img src="hand.png" /></div>
             <div id="instructions">Tap to anchor Psyche</div>
-            <div class="information">
-                <h1>Timer: <span class="timer">0:00</span></h1>
-                <h1>Resources: <span class="resources">0</span></h1>
-            </div>
-            <div class="main">
-                <div class="milestones-container">
-                    <div class="milestones">
-                        <div class="milestone-button-hidden"></div>
-                        <div class="milestones-tracker"></div>
+            <div id="tracking-prompt"><img src="hand.png" /></div>
+            <div id="hud">
+                <div id="information">
+                    <h1>Timer: <span id="timer">0:00</span></h1>
+                    <h1>Resources: <span id="resources">0</span></h1>
+                </div>
+                <div id="main">
+                    <div id="milestones-container">
+                        <div id="milestones">
+                            <div id="milestone-button-hidden"></div>
+                            <div id="milestones-tracker"></div>
+                        </div>
+                    </div>
+                    <div id="pop-up">
+                        <div id="pop-up-content">
+                            <h2 id="pop-up-title"></h2>
+                            <p id="pop-up-text"></p>
+                        </div>
+                        <div id="pop-up-info">
+                            <h3 id="pop-up-upgrade">Upgrade</h3>
+                            <div id="pop-up-upgrade-box">X</div>
+                            <button id="pop-up-close-button">Close</button>
+                        </div>
                     </div>
                 </div>
-                <div class="pop-up">
-                    <div class="pop-up-content">
-                        <h2 class="pop-up-title"></h2>
-                        <p class="pop-up-text"></p>
+                <div id="upgrades">
+                    <div id="upgrade-options">
+                        <button>Upgrade Option 2</button>
+                        <button>Upgrade Option 1</button>
                     </div>
-                    <div class="pop-up-info">
-                        <h3 class="pop-up-upgrade">Upgrade</h3>
-                        <div class="pop-up-upgrade-box">X</div>
-                        <button class="pop-up-close-button">Close</button>
-                    </div>
+                    <button id="upgrade-trigger">U</button>
                 </div>
-            </div>
-            <div class="upgrades">
-                <div class="upgrade-options">
-                    <button>Upgrade Option 2</button>
-                    <button>Upgrade Option 1</button>
-                </div>
-                <button class="upgrade-trigger">U</button>
             </div>
         </div>
         <div id="app">
