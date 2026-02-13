@@ -26,6 +26,7 @@ let camera, scene, renderer;
 let controller;
 
 const MAX_BUTTONS = 10;
+const MULTICLICK_TIMEOUT = 1000;
 let multiClickButtonsRate = 0.5;
 let buttons = [];
 let triggeredButtons = [];
@@ -46,7 +47,7 @@ if ("xr" in navigator) {
     navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
         if (supported) {
             //hide "ar-not-supported"
-            document.getElementById("ar-not-supported").style.display = "none";
+            $("#ar-not-supported").hide();
             init();
             animate();
         }
@@ -150,10 +151,10 @@ function onSelect() {
             addResources(1);
             log("+1 Resource");
 
-            // Get hit button mesh
+            // Get hit button
             const hitButtonMesh = intersects[0].object;
-            // Remove the hit button
             const hitButton = buttons[getButtonIndex(buttons, hitButtonMesh)];
+            hitButton.onSelect();
 
             if (hitButton instanceof MultiClickAsteroidButton) {
                 if (triggeredButtons.every((button) => button !== hitButton))
@@ -161,7 +162,7 @@ function onSelect() {
                 else {
                     includeTimeout = false;
                 }
-                timeout = 3000;
+                timeout = MULTICLICK_TIMEOUT;
                 log("MultiClick Detected");
             }
 
@@ -169,6 +170,7 @@ function onSelect() {
 
             if (includeTimeout) {
                 setTimeout(() => {
+                    // Remove the hit button
                     asteroidGltf.remove(hitButtonMesh);
                     const buttonIndex = getButtonIndex(buttons, hitButtonMesh);
                     const triggeredButtonIndex = getButtonIndex(
