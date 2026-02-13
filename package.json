@@ -12,7 +12,10 @@
     "subdir-build": "vite build --base=/threejs/"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "cloudflared": "^0.4.0",
+    "eslint": "^10.0.0",
+    "globals": "^17.3.0",
     "vite": "^7.2.4"
   },
   "dependencies": {

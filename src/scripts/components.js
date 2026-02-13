@@ -1,9 +1,6 @@
 import * as THREE from "three";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-
 import { log } from "./util.js";
-import { color } from "three/tsl";
 
 export function getCamera() {
     return new THREE.PerspectiveCamera(

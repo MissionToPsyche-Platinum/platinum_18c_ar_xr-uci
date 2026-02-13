@@ -1,5 +1,5 @@
 import $ from "jquery";
-import data from "../data/data.json";
+import milestones from "../data/milestones.json";
 import { log } from "./util";
 
 const TARGET = 120;
@@ -40,14 +40,14 @@ export function initiateHUD() {
         timerId = null;
     });
 
-    data.forEach((_, i) => {
+    milestones.forEach((_, i) => {
         $("#milestones").prepend(
             `<button class="milestone-button" id="${i}"></button>`,
         );
     });
 
-    data.forEach((_, i) => {
-        const localTarget = (TARGET / data.length) * (i + 1);
+    milestones.forEach((_, i) => {
+        const localTarget = (TARGET / milestones.length) * (i + 1);
         $(`.milestone-button#${i}`).on("click", function () {
             alert(`${localTarget} resources away from this milestones!`);
         });
@@ -66,20 +66,21 @@ export function initiateHUD() {
 }
 
 export function addResources(cnt) {
+    log(`${cnt > 0 ? "+" : ""}${cnt} Resources`);
     const currCnt = Number($("#resources").text());
     const unit = $("#milestones").height() / TARGET;
     const resources = currCnt + cnt;
 
     $("#resources").text(resources);
     $("#milestones-tracker").height(unit * Math.min(resources, TARGET));
-    data.forEach((_, i) => {
+    milestones.forEach((_, i) => {
         function initiatePopUp(index) {
-            $("#pop-up-title").text(data[index].title);
-            $("#pop-up-text").text(data[index].text);
+            $("#pop-up-title").text(milestones[index].title);
+            $("#pop-up-text").text(milestones[index].text);
         }
 
         $(`.milestone-button#${i}`).off("click");
-        const localTarget = (TARGET / data.length) * (i + 1);
+        const localTarget = (TARGET / milestones.length) * (i + 1);
         if (resources >= localTarget) {
             $(`.milestone-button#${i}`).css("background-color", "darkgreen");
             $(`.milestone-button#${i}`).on("click", function () {

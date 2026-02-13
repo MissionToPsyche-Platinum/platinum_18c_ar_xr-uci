@@ -1,6 +1,18 @@
+// Dependencies
+import $ from "jquery";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
+// Modules
+import "./qr.js";
+import { addResources, initiateHUD } from "./hud.js";
+import {
+    addHelper,
+    getDebugArrowHelper,
+    getDebugBoxHelper,
+    getDebugEllipsoidHelper,
+    log,
+} from "./util.js";
 import {
     getARButton,
     getCamera,
@@ -12,35 +24,36 @@ import {
     getRandomAsteroidButton,
     MultiClickAsteroidButton,
 } from "./components.js";
-import { log, DEBUG } from "./util.js";
-import { addResources, initiateHUD } from "./hud.js";
-import "./qr.js";
 
-import $ from "jquery";
-
+// Stylesheets
 import "../styles/index.css";
 import "../styles/hud.css";
 
+// Hyperparameters
+import params from "../data/params.json"
+
+// State Variables
+// Main
 let container;
 let camera, scene, renderer;
 let controller;
-
-const MAX_BUTTONS = 10;
-const MULTICLICK_TIMEOUT = 1000;
-let multiClickButtonsRate = 0.5;
-let buttons = [];
-let triggeredButtons = [];
-let buttonsSpawned = false;
-
 let reticle;
 
+// Hit Test
 let hitTestSource = null;
 let hitTestSourceRequested = false;
 let planeFound = false;
 
+// Buttons
+const multiClickButtonsRate = 0.5;
+let buttons = [];
+let triggeredButtons = [];
+let buttonsSpawned = false;
+
+
+// Asteroid
 let asteroidGltf;
 let asteroidSpawned = false;
-let asteroidRotationSpeed = 0.004;
 
 // check for webxr session support
 if ("xr" in navigator) {
@@ -65,28 +78,7 @@ function isReady(name, model) {
 // CALLBACKS
 function sessionStart() {
     planeFound = false;
-    //show #tracking-prompt
-    document.getElementById("tracking-prompt").style.display = "block";
-}
-
-function addEllipsoidDebug() {
-    const geometry = new THREE.SphereGeometry(1, 32, 32);
-
-    const material = new THREE.MeshBasicMaterial({
-        color: 0x00ffff, // cyan
-        wireframe: true,
-        transparent: true,
-        opacity: 0.35,
-    });
-
-    const ellipsoid = new THREE.Mesh(geometry, material);
-
-    // Match your ellipsoid radii
-    ellipsoid.scale.set(1.5, 1.15, 1.35);
-
-    asteroidGltf.add(ellipsoid);
-
-    log("Ellipsoid debug added");
+    $("#tracking-prompt").show();
 }
 
 function onSelect() {
@@ -105,34 +97,10 @@ function onSelect() {
         asteroidGltf.updateWorldMatrix(true, true);
         scene.add(asteroidGltf);
 
-        // DEBUG: hard-coded pink button attached to asteroid
-        // const buttonGeometry = new THREE.SphereGeometry(0.15, 16, 16);
-        // const buttonMaterial = new THREE.MeshBasicMaterial({
-        // 	color: 0xff00ff, // hot pink
-        // });
-
-        // const debugButton = new THREE.Mesh(buttonGeometry, buttonMaterial);
-        // const surfaceRadius = 1.2;
-
-        // // Any direction you want
-        // const dir = new THREE.Vector3(0.6, 0.3, 0.7).normalize();
-
-        // // Place on ellipsoid surface
-        // debugButton.position.set(0, 0, 1.5);
-
-        // // Place on surface
-        // debugButton.position.copy(dir.multiplyScalar(surfaceRadius));
-
-        // debugButton.lookAt(debugButton.position.clone().multiplyScalar(2));
-        // asteroidGltf.add(debugButton);
-
         asteroidSpawned = true;
         log("Asteroid Added");
-
-        if (DEBUG) {
-            const boxHelper = new THREE.BoxHelper(asteroidGltf, 0xff0000); // red
-            scene.add(boxHelper);
-        }
+        addHelper(asteroidGltf, getDebugEllipsoidHelper());
+        addHelper(scene, getDebugBoxHelper(asteroidGltf));
     }
 
     function replaceButton() {
@@ -149,7 +117,6 @@ function onSelect() {
 
             // Add Resource
             addResources(1);
-            log("+1 Resource");
 
             // Get hit button
             const hitButtonMesh = intersects[0].object;
@@ -162,7 +129,7 @@ function onSelect() {
                 else {
                     includeTimeout = false;
                 }
-                timeout = MULTICLICK_TIMEOUT;
+                timeout = params.MULTICLICK_TIMEOUT;
                 log("MultiClick Detected");
             }
 
@@ -195,16 +162,7 @@ function onSelect() {
         raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
         raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
 
-        if (DEBUG) {
-            const arrow = new THREE.ArrowHelper(
-                raycaster.ray.direction,
-                raycaster.ray.origin,
-                1,
-                0x00ff00,
-            );
-
-            scene.add(arrow);
-        }
+        addHelper(scene, getDebugArrowHelper(raycaster));
 
         const intersects = raycaster.intersectObjects(
             buttons.map((button) => button.mesh),
@@ -228,16 +186,11 @@ function spawnRandomButton() {
     if (!isReady("Asteroid", asteroidGltf)) return false;
 
     log("Spawning button...");
-    const button = getRandomAsteroidButton(multiClickButtonsRate);
+    const button = getRandomAsteroidButton(params.MULTICLICK_RATE);
     const buttonMesh = button.mesh;
 
-    // Change size button
-    buttonMesh.scale.setScalar(1.2);
-
     // LOCAL ellipsoid radii
-    const radiusX = 1.5;
-    const radiusY = 1.15;
-    const radiusZ = 1.35;
+    const [rX, rY, rZ] = params.ASTEROID_RADIUS;
 
     // Random direction on unit sphere
     const dir = new THREE.Vector3(
@@ -247,11 +200,7 @@ function spawnRandomButton() {
     ).normalize();
 
     // Project direction onto ellipsoid surface
-    const localPosition = new THREE.Vector3(
-        dir.x * radiusX,
-        dir.y * radiusY,
-        dir.z * radiusZ,
-    );
+    const localPosition = new THREE.Vector3(dir.x * rX, dir.y * rY, dir.z * rZ);
 
     // Sink slightly INTO the asteroid
     const inset = 0.08;
@@ -270,8 +219,7 @@ function spawnRandomButton() {
 
 // MAIN FUNCTIONS
 function init() {
-    container = document.createElement("div");
-    document.body.appendChild(container);
+    container = $("<div>").appendTo("body");
 
     scene = new THREE.Scene();
     camera = getCamera();
@@ -297,10 +245,9 @@ function init() {
         asteroidGltf = modelWrapper;
     });
 
-    // spawnRandomButton();
-    container.appendChild(renderer.domElement);
-    document.body.appendChild(getARButton(renderer));
-    window.addEventListener("resize", onWindowResize);
+    container.append(renderer.domElement);
+    $("body").append(getARButton(renderer));
+    $(window).on("resize", onWindowResize);
 }
 
 function render(timestamp, frame) {
@@ -334,19 +281,19 @@ function render(timestamp, frame) {
                     $("#tracking-prompt").hide();
                     $("#instructions").show();
                 }
-                // Spawn initial buttons after asteroid is spawned
-                if (asteroidSpawned && !buttonsSpawned) {
-                    initiateHUD();
-                    for (let i = 0; i < MAX_BUTTONS; i++) {
-                        if (spawnRandomButton()) buttonsSpawned = true;
-                    }
-                }
                 const hit = hitTestResults[0];
                 if (!asteroidSpawned) {
                     reticle.visible = true;
                     reticle.matrix.fromArray(
                         hit.getPose(referenceSpace).transform.matrix,
                     );
+                }
+                // Spawn initial buttons after asteroid is spawned
+                if (asteroidSpawned && !buttonsSpawned) {
+                    initiateHUD();
+                    for (let i = 0; i < params.MAX_BUTTONS; i++) {
+                        if (spawnRandomButton()) buttonsSpawned = true;
+                    }
                 }
             } else {
                 reticle.visible = false;
@@ -356,7 +303,7 @@ function render(timestamp, frame) {
 
     // Rotate asteroid if spawned
     if (asteroidSpawned && asteroidGltf) {
-        asteroidGltf.rotation.x += asteroidRotationSpeed;
+        asteroidGltf.rotation.x += params.ASTEROID_ROATATION_SPEED;
     }
 
     renderer.render(scene, camera);
