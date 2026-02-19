@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import { log } from "./util.js";
+import { addResources, getResources } from "./hud.js";
+import upgrades from "../data/upgrades.json";
 
 export function getCamera() {
     return new THREE.PerspectiveCamera(
@@ -78,10 +80,7 @@ class AsteroidButton {
     onSelect() {
         setTimeout(() => {
             this.changeColor(this.ON_SELECT_COLOR);
-            setTimeout(
-                () => this.changeColor(this.color),
-                this.ON_SELECT_TIME,
-            );
+            setTimeout(() => this.changeColor(this.color), this.ON_SELECT_TIME);
         }, this.ON_SELECT_TIME);
     }
 }
@@ -112,4 +111,49 @@ export function getRandomAsteroidButton(multiClickButtonsRate) {
     if (Math.random() <= multiClickButtonsRate)
         return new MultiClickAsteroidButton();
     return new SingleClickAsteroidButton();
+}
+
+class UpgradeFactory {
+    constructor(name, cost, incrementBy, resourcesBySecond) {
+        this.name = name;
+        this.cost = cost;
+        this.incrementBy = incrementBy;
+        this.resourcesBySecond = resourcesBySecond;
+    }
+
+    start() {
+        setInterval(() => addResources(this.resourcesBySecond), 1000);
+    }
+
+    buy(overhead) {
+        const totalCost = -(this.cost + this.incrementBy * overhead);
+        if (getResources() + totalCost >= 0) {
+            addResources();
+            this.start();
+        } else {
+            log("Not enough resources!");
+        }
+    }
+}
+
+export class ManualDrillFactory extends UpgradeFactory {
+    static count = -1;
+
+    constructor() {
+        super(...upgrades[0]);
+        ManualDrillFactory.count++;
+    }
+
+    buy() {super.buy(ManualDrillFactory.count)}
+}
+
+export class CrewManagerFactory extends UpgradeFactory {
+    static count = -1;
+
+    constructor() {
+        super(...upgrades[1]);
+        CrewManagerFactory.count++;
+    }
+
+    buy() {super.buy(CrewManagerFactory.count)}
 }

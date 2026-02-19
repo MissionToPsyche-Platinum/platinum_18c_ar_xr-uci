@@ -1,7 +1,9 @@
 import $ from "jquery";
 import { log } from "./util";
-import params from "../data/params.json"
+import params from "../data/params.json";
 import milestones from "../data/milestones.json";
+import upgrades from "../data/upgrades.json";
+import { CrewManagerFactory, ManualDrillFactory } from "./components";
 
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
@@ -46,9 +48,23 @@ export function initiateHUD() {
     });
 
     milestones.forEach((_, i) => {
-        const localTarget = (params.TARGET_RESOURCES / milestones.length) * (i + 1);
+        const localTarget =
+            (params.TARGET_RESOURCES / milestones.length) * (i + 1);
         $(`.milestone-button#${i}`).on("click", function () {
             alert(`${localTarget} resources away from this milestones!`);
+        });
+    });
+
+    upgrades.forEach((_, i) => {
+        $("#upgrade-options").prepend(
+            `<button class="upgrade-button" id=${i}>{}</button>`,
+        );
+    });
+
+    upgrades.forEach((upgrade, i) => {
+        $(`.upgrade-button#${i}`).on("click", function () {
+            if (i === 0) ManualDrillFactory(...upgrade);
+            if (i === 1) CrewManagerFactory(...upgrade);
         });
     });
 
@@ -64,6 +80,10 @@ export function initiateHUD() {
     });
 }
 
+export function getResources() {
+    return Number($("#resources").text());
+}
+
 export function addResources(cnt) {
     log(`${cnt > 0 ? "+" : ""}${cnt} Resources`);
     const currCnt = Number($("#resources").text());
@@ -71,7 +91,9 @@ export function addResources(cnt) {
     const resources = currCnt + cnt;
 
     $("#resources").text(resources);
-    $("#milestones-tracker").height(unit * Math.min(resources, params.TARGET_RESOURCES));
+    $("#milestones-tracker").height(
+        unit * Math.min(resources, params.TARGET_RESOURCES),
+    );
     milestones.forEach((_, i) => {
         function initiatePopUp(index) {
             $("#pop-up-title").text(milestones[index].title);
@@ -79,7 +101,8 @@ export function addResources(cnt) {
         }
 
         $(`.milestone-button#${i}`).off("click");
-        const localTarget = (params.TARGET_RESOURCES / milestones.length) * (i + 1);
+        const localTarget =
+            (params.TARGET_RESOURCES / milestones.length) * (i + 1);
         if (resources >= localTarget) {
             $(`.milestone-button#${i}`).css("background-color", "darkgreen");
             $(`.milestone-button#${i}`).on("click", function () {
