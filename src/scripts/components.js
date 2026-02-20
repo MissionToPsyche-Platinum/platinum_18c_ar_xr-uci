@@ -119,16 +119,28 @@ class UpgradeFactory {
         this.cost = cost;
         this.incrementBy = incrementBy;
         this.resourcesBySecond = resourcesBySecond;
+        this.count = 0
+        this.interval = null;
     }
 
     start() {
-        setInterval(() => addResources(this.resourcesBySecond), 1000);
+        if (this.interval) clearInterval(this.interval);
+        this.interval = setInterval(() => addResources(this.resourcesBySecond * this.count), 1000);
     }
 
-    buy(overhead) {
-        const totalCost = -(this.cost + this.incrementBy * overhead);
-        if (getResources() + totalCost >= 0) {
-            addResources();
+    getCount() {
+        return this.count;
+    }
+
+    getTotalCost() {
+        return this.cost + this.incrementBy * this.count;
+    }
+
+    buy() {
+        if (getResources() - this.getTotalCost() >= 0) {
+            log("Upgraded!")
+            addResources(-this.getTotalCost());
+            this.count++;
             this.start();
         } else {
             log("Not enough resources!");
@@ -137,23 +149,23 @@ class UpgradeFactory {
 }
 
 export class ManualDrillFactory extends UpgradeFactory {
-    static count = -1;
-
     constructor() {
-        super(...upgrades[0]);
-        ManualDrillFactory.count++;
+        super("1", 20, 1, 1);
     }
 
-    buy() {super.buy(ManualDrillFactory.count)}
+    buy() {
+        log("Attempting to buy manual drill")
+        super.buy();
+    }
 }
 
 export class CrewManagerFactory extends UpgradeFactory {
-    static count = -1;
-
     constructor() {
-        super(...upgrades[1]);
-        CrewManagerFactory.count++;
+        super("2", 40, 5, 3);
     }
-
-    buy() {super.buy(CrewManagerFactory.count)}
+    
+    buy() {
+        log("Attempting to buy crew manager")
+        super.buy();
+    }
 }

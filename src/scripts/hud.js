@@ -17,6 +17,8 @@ export function initiateHUD() {
     let second = 0;
     let timerId = null;
 
+    let factories = [new ManualDrillFactory(), new CrewManagerFactory()];
+
     function updateTimer() {
         second++;
 
@@ -57,15 +59,14 @@ export function initiateHUD() {
 
     upgrades.forEach((_, i) => {
         $("#upgrade-options").prepend(
-            `<button class="upgrade-button" id=${i}>{}</button>`,
+            `<button class="upgrade-button" data-index=${i}>${i}</button>`,
         );
     });
 
-    upgrades.forEach((upgrade, i) => {
-        $(`.upgrade-button#${i}`).on("click", function () {
-            if (i === 0) ManualDrillFactory(...upgrade);
-            if (i === 1) CrewManagerFactory(...upgrade);
-        });
+    $("#upgrade-options").on("click", ".upgrade-button", function () {
+        const i = $(this).data("index");
+        log(`Buying ${i}`);
+        factories[i].buy();
     });
 
     $("#pop-up").hide();
@@ -78,6 +79,8 @@ export function initiateHUD() {
     $("#upgrade-trigger").on("click", function () {
         $("#upgrade-options").toggle();
     });
+
+    addResources(100);
 }
 
 export function getResources() {

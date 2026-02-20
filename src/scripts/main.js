@@ -104,8 +104,8 @@ function onSelect() {
     }
 
     function replaceButton() {
-        log("replaceButton activated!");
         function onIntersection() {
+            log("onIntersection activated!");
             function getButtonIndex(buttonArr, targetButtonMesh) {
                 return buttonArr
                     .map((button) => button.mesh)
