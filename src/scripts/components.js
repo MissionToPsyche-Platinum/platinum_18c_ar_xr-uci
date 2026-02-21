@@ -56,36 +56,46 @@ export function getRecticle() {
 }
 
 class AsteroidButton {
-  constructor(color) {
+  constructor(geometry, color, scale = 1) {
     this.ON_SELECT_TIME = 100;
     this.ON_SELECT_COLOR = 0x0000ff;
 
     this.color = color;
+
     this.mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.14, 20, 20),
-      new THREE.MeshBasicMaterial({
+      geometry,
+      new THREE.MeshStandardMaterial({
         color: color,
+        emissive: color,
+        emissiveIntensity: 0.6,
         roughness: 0.4,
         metalness: 0.1,
       }),
     );
+
+    this.mesh.scale.setScalar(scale);
   }
 
   changeColor(color) {
     this.mesh.material.color.set(color);
+    this.mesh.material.emissive.set(color);
   }
 
   onSelect() {
-    setTimeout(() => {
-      this.changeColor(this.ON_SELECT_COLOR);
-      setTimeout(() => this.changeColor(this.color), this.ON_SELECT_TIME);
-    }, this.ON_SELECT_TIME);
+    this.changeColor(this.ON_SELECT_COLOR);
+    setTimeout(() => this.changeColor(this.color), this.ON_SELECT_TIME);
   }
 }
 
 export class SingleClickAsteroidButton extends AsteroidButton {
   constructor() {
-    super(0xff0000);
+    super(
+      new THREE.SphereGeometry(0.15, 16, 16), // shape
+      0x9b5de5, // purple
+      2,
+    );
+
+    this.type = "single";
   }
 
   onSelect() {
@@ -96,7 +106,13 @@ export class SingleClickAsteroidButton extends AsteroidButton {
 
 export class MultiClickAsteroidButton extends AsteroidButton {
   constructor() {
-    super(0x00ff00);
+    super(
+      new THREE.BoxGeometry(0.12, 0.12, 0.12), // shape
+      0xf15a24, // orange
+      2,
+    );
+
+    this.type = "multi";
   }
 
   onSelect() {

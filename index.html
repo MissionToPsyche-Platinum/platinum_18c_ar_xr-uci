@@ -49,32 +49,39 @@
         </div>
         <div id="upgrades">
           <div id="upgrade-options">
-            <button>Upgrade Option 2</button>
-            <button>Upgrade Option 1</button>
+            <button class="upgrade-button"></button>
+            <button class="upgrade-button"></button>
           </div>
           <button id="upgrade-trigger">U</button>
         </div>
       </div>
     </div>
+    <!-- Landing Page Start -->
     <div id="app">
-      <a href="https://launch.variant3d.com">
-        <!-- <img id="variant-logo" alt="WebXR on iOS" src="favicon.ico" /> -->
-      </a>
-      <h2>PSYCHE EXPERIENCE</h2>
-      <div id="ar-not-supported">
-        <p>
-          WebXR Not Supported. Open this page on iOS or Android to view the
-          example.
-        </p>
-        <p>
-          For documentation & support, visit
-          <a href="https://launch.variant3d.com/docs"
-            >https://launch.variant3d.com</a
-          >.
-        </p>
-        <img id="qr-code" />
-      </div>
+      <main class="screen" role="main">
+        <header class="hero">
+          <p class="badge">MISSION TO A METAL WORLD</p>
+          <h1 class="title" style="margin-top: 20px;">Psyche: Digging for Information</h1>
+          <p class="subtitle"></p>
+        </header>
+    
+        <section class="card" style="margin-top: 40px;" id="mission">
+          <h2 class="card-title" style="text-align: center;">Mission Brief</h2>
+          <p>Collect resources on the Psyche asteroid to earn upgrades and learn facts about the mission!
+            Earn extra resources by tapping the purple shapes multiple times.
+          </p>
+        </section>
+
+        <div id="ar-not-supported">
+          <img id="qr-code" />
+          <p>
+            For documentation & support, visit
+            <a href="https://launch.variant3d.com/docs">https://launch.variant3d.com</a>.
+          </p>
+        </div>
+      </main>
     </div>
+    <!-- Landing Page End -->
     <script type="module" src="/src/scripts/main.js"></script>
     <script type="module" src="/src/scripts/hud.js"></script>
   </body>
