@@ -47,13 +47,17 @@
     padding: 5px;
 }
 
-.milestone-button {
+.milestone-buttons {
     height: 10dvw;
     width: 10dvw;
     border: 0px;
     border-radius: 100%;
     background-color: gray;
     z-index: 1;
+}
+
+.unlocked-milestones {
+    background-color: darkgreen;
 }
 
 #milestones-tracker {

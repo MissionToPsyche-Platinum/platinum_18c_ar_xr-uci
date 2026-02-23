@@ -45,7 +45,6 @@ let hitTestSourceRequested = false;
 let planeFound = false;
 
 // Buttons
-const multiClickButtonsRate = 0.5;
 let buttons = [];
 let triggeredButtons = [];
 let buttonsSpawned = false;

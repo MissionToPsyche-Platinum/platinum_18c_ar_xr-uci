@@ -45,16 +45,9 @@ export function initiateHUD() {
 
     milestones.forEach((_, i) => {
         $("#milestones").prepend(
-            `<button class="milestone-button" id="${i}"></button>`,
+            `<button class="milestone-buttons locked-milestones" id="${i}"></button>`,
         );
-    });
-
-    milestones.forEach((_, i) => {
-        const localTarget =
-            (params.TARGET_RESOURCES / milestones.length) * (i + 1);
-        $(`.milestone-button#${i}`).on("click", function () {
-            alert(`${localTarget} resources away from this milestones!`);
-        });
+        log(`Added milestone ${i}`)
     });
 
     upgrades.forEach((_, i) => {
@@ -80,7 +73,7 @@ export function initiateHUD() {
         $("#upgrade-options").toggle();
     });
 
-    addResources(100);
+    // addResources(100);
 }
 
 export function getResources() {
@@ -88,39 +81,46 @@ export function getResources() {
 }
 
 export function addResources(cnt) {
-    log(`${cnt > 0 ? "+" : ""}${cnt} Resources`);
     const currCnt = Number($("#resources").text());
-    const unit = $("#milestones").height() / params.TARGET_RESOURCES;
     const resources = currCnt + cnt;
+    const totalTarget = params.TARGET_RESOURCES;
+    const unit = $("#milestones").height() / totalTarget;
 
+    // Update UI
     $("#resources").text(resources);
-    $("#milestones-tracker").height(
-        unit * Math.min(resources, params.TARGET_RESOURCES),
-    );
-    milestones.forEach((_, i) => {
-        function initiatePopUp(index) {
-            $("#pop-up-title").text(milestones[index].title);
-            $("#pop-up-text").text(milestones[index].text);
-        }
+    $("#milestones-tracker").height(unit * Math.min(resources, totalTarget));
+    
+    milestones.forEach((milestone, i) => {
+        const $el = $(`.milestone-buttons#${i}`); // Select by ID first for efficiency
+        const localTarget = (totalTarget / milestones.length) * (i + 1);
+        
+        // Check if it was previously locked
+        const wasLocked = $el.hasClass("locked-milestones");
+        // No change after unlocked
+        if (!wasLocked) return;
 
-        $(`.milestone-button#${i}`).off("click");
-        const localTarget =
-            (params.TARGET_RESOURCES / milestones.length) * (i + 1);
+        // Helper to populate the popup
+        const showPopUp = () => {
+            $("#pop-up-title").text(milestone.title);
+            $("#pop-up-text").text(milestone.text);
+            $("#pop-up").show();
+        };
+
+        // Clear previous listeners to prevent stacking
+        $el.off("click");
+
         if (resources >= localTarget) {
-            $(`.milestone-button#${i}`).css("background-color", "darkgreen");
-            $(`.milestone-button#${i}`).on("click", function () {
-                initiatePopUp(i);
-                $("#pop-up").toggle();
-            });
-            if (resources === localTarget) {
-                initiatePopUp(i);
-                $("#pop-up").show();
-            }
+            $el.addClass("unlocked-milestones")
+               .removeClass("locked-milestones");
+
+            $el.on("click", showPopUp);
+
+            // Auto-open popup only the moment it unlocks
+            if (wasLocked) showPopUp();
         } else {
-            $(`.milestone-button#${i}`).on("click", function () {
-                alert(
-                    `${localTarget - resources} resources away from this milestones!`,
-                );
+            // Still locked logic
+            $el.on("click", () => {
+                alert(`${localTarget - resources} resources away from this milestone!`);
             });
         }
     });
