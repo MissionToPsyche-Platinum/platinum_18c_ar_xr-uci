@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import { log } from "./util.js";
+import { addResources, getResources } from "./hud.js";
+import upgrades from "../data/upgrades.json";
 
 export function getCamera() {
   return new THREE.PerspectiveCamera(
@@ -81,10 +83,12 @@ class AsteroidButton {
     this.mesh.material.emissive.set(color);
   }
 
-  onSelect() {
-    this.changeColor(this.ON_SELECT_COLOR);
-    setTimeout(() => this.changeColor(this.color), this.ON_SELECT_TIME);
-  }
+    onSelect() {
+        setTimeout(() => {
+            this.changeColor(this.ON_SELECT_COLOR);
+            setTimeout(() => this.changeColor(this.color), this.ON_SELECT_TIME);
+        }, this.ON_SELECT_TIME);
+    }
 }
 
 export class SingleClickAsteroidButton extends AsteroidButton {
@@ -125,4 +129,61 @@ export function getRandomAsteroidButton(multiClickButtonsRate) {
   if (Math.random() <= multiClickButtonsRate)
     return new MultiClickAsteroidButton();
   return new SingleClickAsteroidButton();
+}
+
+class UpgradeFactory {
+    constructor(name, cost, incrementBy, resourcesBySecond) {
+        this.name = name;
+        this.cost = cost;
+        this.incrementBy = incrementBy;
+        this.resourcesBySecond = resourcesBySecond;
+        this.count = 0
+        this.interval = null;
+    }
+
+    start() {
+        if (this.interval) clearInterval(this.interval);
+        this.interval = setInterval(() => addResources(this.resourcesBySecond * this.count), 1000);
+    }
+
+    getCount() {
+        return this.count;
+    }
+
+    getTotalCost() {
+        return this.cost + this.incrementBy * this.count;
+    }
+
+    buy() {
+        if (getResources() - this.getTotalCost() >= 0) {
+            log("Upgraded!")
+            addResources(-this.getTotalCost());
+            this.count++;
+            this.start();
+        } else {
+            log("Not enough resources!");
+        }
+    }
+}
+
+export class ManualDrillFactory extends UpgradeFactory {
+    constructor() {
+        super("1", 20, 1, 1);
+    }
+
+    buy() {
+        log("Attempting to buy manual drill")
+        super.buy();
+    }
+}
+
+export class CrewManagerFactory extends UpgradeFactory {
+    constructor() {
+        super("2", 40, 5, 3);
+    }
+    
+    buy() {
+        log("Attempting to buy crew manager")
+        super.buy();
+    }
 }
