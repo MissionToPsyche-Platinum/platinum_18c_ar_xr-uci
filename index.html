@@ -6,75 +6,82 @@
         <!-- REPLACE WITH YOUR SDK KEY TAG FROM https://launchar.app -->
         <!-- / REPLACE WITH YOUR SDK KEY TAG FROM https://launchar.app -->
 
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;700&display=swap"
-            rel="stylesheet"
-        />
-        <meta charset="UTF-8" />
-        <!-- <link rel="icon" href="/favicon.ico" /> -->
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-        />
-    </head>
-    <body>
-        <div id="overlay">
-            <div id="log-display"></div>
-            <div id="instructions">Tap to anchor Psyche</div>
-            <div id="tracking-prompt"><img src="hand.png" /></div>
-            <div id="hud">
-                <div id="information">
-                    <h1>Timer: <span id="timer">0:00</span></h1>
-                    <h1>Resources: <span id="resources">0</span></h1>
-                </div>
-                <div id="main">
-                    <div id="milestones-container">
-                        <div id="milestones">
-                            <div id="milestone-button-hidden"></div>
-                            <div id="milestones-tracker"></div>
-                        </div>
-                    </div>
-                    <div id="pop-up">
-                        <div id="pop-up-content">
-                            <h2 id="pop-up-title"></h2>
-                            <p id="pop-up-text"></p>
-                        </div>
-                        <div id="pop-up-info">
-                            <h3 id="pop-up-upgrade">Upgrade</h3>
-                            <div id="pop-up-upgrade-box">X</div>
-                            <button id="pop-up-close-button">Close</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="upgrades">
-                    <div id="upgrade-options">
-                    </div>
-                    <button id="upgrade-trigger">U</button>
-                </div>
-            </div>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" href="/favicon.ico" /> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+  </head>
+  <body>
+    <div id="overlay">
+      <div id="log-display"></div>
+      <div id="instructions">Tap to anchor Psyche</div>
+      <div id="tracking-prompt"><img src="hand.png" /></div>
+      <div id="hud">
+        <div id="information">
+          <h1>Timer: <span id="timer">0:00</span></h1>
+          <h1>Resources: <span id="resources">0</span></h1>
         </div>
-        <!-- Landing Page Start -->
-        <div id="app">
-            <a href="https://launch.variant3d.com">
-                <!-- <img id="variant-logo" alt="WebXR on iOS" src="favicon.ico" /> -->
-            </a>
-            <h2>PSYCHE EXPERIENCE</h2>
-            <div id="ar-not-supported">
-                <p>
-                    WebXR Not Supported. Open this page on iOS or Android to
-                    view the example.
-                </p>
-                <p>
-                    For documentation & support, visit
-                    <a href="https://launch.variant3d.com/docs"
-                        >https://launch.variant3d.com</a
-                    >.
-                </p>
-                <img id="qr-code" />
+        <div id="main">
+          <div id="milestones-container">
+            <div id="milestones">
+              <div id="milestone-button-hidden"></div>
+              <div id="milestones-tracker"></div>
             </div>
+          </div>
+          <div id="pop-up">
+            <div id="pop-up-content">
+              <h2 id="pop-up-title"></h2>
+              <p id="pop-up-text"></p>
+            </div>
+            <div id="pop-up-info">
+              <h3 id="pop-up-upgrade">Upgrade</h3>
+              <div id="pop-up-upgrade-box">X</div>
+              <button id="pop-up-close-button">Close</button>
+            </div>
+          </div>
         </div>
-        <!-- Landing Page End -->
-        <script type="module" src="/src/scripts/main.js"></script>
-        <script type="module" src="/src/scripts/hud.js"></script>
-    </body>
+        <div id="upgrades">
+          <div id="upgrade-options">
+            <button class="upgrade-button"></button>
+            <button class="upgrade-button"></button>
+          </div>
+          <button id="upgrade-trigger">U</button>
+        </div>
+      </div>
+    </div>
+    <!-- Landing Page Start -->
+    <div id="app">
+      <main class="screen" role="main">
+        <header class="hero">
+          <p class="badge">MISSION TO A METAL WORLD</p>
+          <h1 class="title" style="margin-top: 20px;">Psyche: Digging for Information</h1>
+          <p class="subtitle"></p>
+        </header>
+    
+        <section class="card" style="margin-top: 40px;" id="mission">
+          <h2 class="card-title" style="text-align: center;">Mission Brief</h2>
+          <p>Collect resources on the Psyche asteroid to earn upgrades and learn facts about the mission!
+            Earn extra resources by tapping the purple shapes multiple times.
+          </p>
+        </section>
+
+        <div id="ar-not-supported">
+          <img id="qr-code" />
+          <p>
+            For documentation & support, visit
+            <a href="https://launch.variant3d.com/docs">https://launch.variant3d.com</a>.
+          </p>
+        </div>
+      </main>
+    </div>
+    <!-- Landing Page End -->
+    <script type="module" src="/src/scripts/main.js"></script>
+    <script type="module" src="/src/scripts/hud.js"></script>
+  </body>
 </html>
