@@ -1,13 +1,13 @@
 [
     {
         "name": "Manual Drill",
-        "cost": 20,
+        "defaultCost": 20,
         "incrementBy": 1,
         "resourcesPerSecond": 1
     },
     {
         "name": "Crew Manager",
-        "cost": 50,
+        "defaultCost": 50,
         "incrementBy": 5,
         "resourcesPerSecond": 3
     }

@@ -1,0 +1,46 @@
+{
+    "MAX_BUTTON": {
+        "name": "Max Buttons",
+        "initialValue": 10,
+        "defaultCost": 60,
+        "incrementBy": 0,
+        "multiplyBy": 2,
+        "costCompounding": false,
+        "valueIncrementBy": 0.1,
+        "valueMultiplyBy": 1,
+        "valueCompounding": false
+    },
+    "MULTICLICK_SPLIT": {
+        "name": "Multiclick Split",
+        "initialValue": 0.1,
+        "defaultCost": 60,
+        "incrementBy": 0,
+        "multiplyBy": 2,
+        "costCompounding": false,
+        "valueIncrementBy": 0.1,
+        "valueMultiplyBy": 1,
+        "valueCompounding": false
+    },
+    "MULTICLICK_TIMEOUT": {
+        "name": "Multiclick Timeout",
+        "initialValue": 1000,
+        "defaultCost": 55,
+        "incrementBy": 0,
+        "multiplyBy": 2,
+        "costCompounding": false,
+        "valueIncrementBy": 0,
+        "valueMultiplyBy": 2,
+        "valueCompounding": false
+    },
+    "ASTEROID_ROTATION_SPEED": {
+        "name": "Asteroid Rotation Speed",
+        "initialValue": 0.006,
+        "defaultCost": 40,
+        "incrementBy": 0,
+        "multiplyBy": 2,
+        "costCompounding": false,
+        "valueIncrementBy": 0,
+        "valueMultiplyBy": 2,
+        "valueCompounding": true
+    }
+}

@@ -1,65 +1,82 @@
 import $ from "jquery";
-import { log } from "./util";
+
+import { log } from "./util.js";
+
+import { initiateToolUpgrades } from "./main.js";
+
 import params from "../data/params.json";
 import milestones from "../data/milestones.json";
-import upgrades from "../data/upgrades.json";
-import { CrewManagerFactory, ManualDrillFactory } from "./components";
+import toolUpgrades from "../data/tool_upgrades.json";
+import sensorUpgrades from "../data/sensor_upgrades.json";
 
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
 });
 
-export function initiateHUD() {
+export function initiateHUD(tools, sensors) {
     $("#hud").show();
     $("#instructions").hide();
+    log(`Sensors are${sensors ? "" : " not"} ready`)
 
-    let minute = 0;
-    let second = 0;
-    let timerId = null;
+    // let minute = 0;
+    // let second = 0;
+    // let timerId = null;
 
-    let factories = [new ManualDrillFactory(), new CrewManagerFactory()];
+    // function updateTimer() {
+    //     second++;
 
-    function updateTimer() {
-        second++;
+    //     if (second === 60) {
+    //         minute++;
+    //         second = 0;
+    //     }
 
-        if (second === 60) {
-            minute++;
-            second = 0;
-        }
+    //     const formattedSecond = String(second).padStart(2, "0");
+    //     $("#timer").text(`${minute}:${formattedSecond}`);
+    // }
 
-        const formattedSecond = String(second).padStart(2, "0");
-        $("#timer").text(`${minute}:${formattedSecond}`);
-    }
+    // $("#start").on("click", function () {
+    //     if (!timerId) {
+    //         // prevent multiple intervals
+    //         timerId = setInterval(updateTimer, 1000);
+    //     }
+    // });
 
-    $("#start").on("click", function () {
-        if (!timerId) {
-            // prevent multiple intervals
-            timerId = setInterval(updateTimer, 1000);
-        }
-    });
+    // $("#pause").on("click", function () {
+    //     clearInterval(timerId);
+    //     timerId = null;
+    // });
 
-    $("#pause").on("click", function () {
-        clearInterval(timerId);
-        timerId = null;
-    });
+    const factories = initiateToolUpgrades();
 
     milestones.forEach((_, i) => {
         $("#milestones").prepend(
             `<button class="milestone-buttons locked-milestones" id="${i}"></button>`,
         );
-        log(`Added milestone ${i}`)
+        log(`Added milestone ${i}`);
     });
 
-    upgrades.forEach((_, i) => {
+    toolUpgrades.forEach((_, i) => {
         $("#upgrade-options").prepend(
             `<button class="upgrade-button" data-index=${i}>${i}</button>`,
         );
     });
-
+    
+    for (let i = 0; i < Object.keys(sensors).length; i++) {
+        $("#upgrade-options").prepend(
+            `<button class="sensor-upgrade-button" data-index=${(i+2)*2}>${(i+2)*2}</button>`,
+        );
+    };
+    
     $("#upgrade-options").on("click", ".upgrade-button", function () {
         const i = $(this).data("index");
         log(`Buying ${i}`);
         factories[i].buy();
+    });
+
+    $("#upgrade-options").on("click", ".sensor-upgrade-button", function () {
+        const i = $(this).data("index");
+        log(`Buying Sensor ${i}`);
+        Object.values(sensors)[Math.trunc(i/2 - 2)].buy();
     });
 
     $("#pop-up").hide();
@@ -73,7 +90,7 @@ export function initiateHUD() {
         $("#upgrade-options").toggle();
     });
 
-    // addResources(100);
+    addResources(100);
 }
 
 export function getResources() {
@@ -89,11 +106,11 @@ export function addResources(cnt) {
     // Update UI
     $("#resources").text(resources);
     $("#milestones-tracker").height(unit * Math.min(resources, totalTarget));
-    
+
     milestones.forEach((milestone, i) => {
         const $el = $(`.milestone-buttons#${i}`); // Select by ID first for efficiency
         const localTarget = (totalTarget / milestones.length) * (i + 1);
-        
+
         // Check if it was previously locked
         const wasLocked = $el.hasClass("locked-milestones");
         // No change after unlocked
@@ -110,8 +127,9 @@ export function addResources(cnt) {
         $el.off("click");
 
         if (resources >= localTarget) {
-            $el.addClass("unlocked-milestones")
-               .removeClass("locked-milestones");
+            $el.addClass("unlocked-milestones").removeClass(
+                "locked-milestones",
+            );
 
             $el.on("click", showPopUp);
 
@@ -120,7 +138,9 @@ export function addResources(cnt) {
         } else {
             // Still locked logic
             $el.on("click", () => {
-                alert(`${localTarget - resources} resources away from this milestone!`);
+                alert(
+                    `${localTarget - resources} resources away from this milestone!`,
+                );
             });
         }
     });
