@@ -131,20 +131,22 @@ export function getRandomAsteroidButton(multiClickButtonsRate) {
     return new SingleClickAsteroidButton();
 }
 
-class ToolFactory {
-    constructor(name, defaultCost, incrementBy, resourcesBySecond) {
-        this.name = name;
-        this.defaultCost = defaultCost;
-        this.incrementBy = incrementBy;
-        this.resourcesBySecond = resourcesBySecond;
+export class ToolUpgrade {
+    constructor(config) {
+        this.name = config.name;
+        this.defaultCost = config.defaultCost;
+        this.incrementBy = config.incrementBy;
+        this.resourcesPerSecond = config.resourcesPerSecond;
         this.count = 0;
         this.interval = null;
+
     }
 
     start() {
+        log(`RPS: ${this.resourcesPerSecond}; Count: ${this.count}`)
         if (this.interval) clearInterval(this.interval);
         this.interval = setInterval(
-            () => addResources(this.resourcesBySecond * this.count),
+            () => addResources(this.resourcesPerSecond * this.count),
             1000,
         );
     }
@@ -163,35 +165,13 @@ class ToolFactory {
 
     buy() {
         if (this.isBuyable()) {
-            log("Upgraded!");
+            log(`Tool upgraded! Cost: ${this.getTotalCost()}`);
             addResources(-this.getTotalCost());
             this.count++;
             this.start();
         } else {
             log("Not enough resources!");
         }
-    }
-}
-
-export class ManualDrillFactory extends ToolFactory {
-    constructor() {
-        super("1", 20, 1, 1);
-    }
-
-    buy() {
-        log("Attempting to buy manual drill");
-        super.buy();
-    }
-}
-
-export class CrewManagerFactory extends ToolFactory {
-    constructor() {
-        super("2", 40, 5, 3);
-    }
-
-    buy() {
-        log("Attempting to buy crew manager");
-        super.buy();
     }
 }
 
@@ -237,6 +217,7 @@ export class SensorUpgrade {
 
     buy() {
         if (!this.isBuyable()) return;
+        log("Sensor upgraded!")
         addResources(-this.cost);
 
         this.value = this.getValue();

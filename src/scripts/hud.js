@@ -2,18 +2,14 @@ import $ from "jquery";
 
 import { log } from "./util.js";
 
-import { initiateToolUpgrades } from "./main.js";
-
 import params from "../data/params.json";
 import milestones from "../data/milestones.json";
-import toolUpgrades from "../data/tool_upgrades.json";
-import sensorUpgrades from "../data/sensor_upgrades.json";
 
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
 });
 
-export function initiateHUD(tools, sensors) {
+export function initHUD(tools, sensors) {
     $("#hud").show();
     $("#instructions").hide();
     log(`Sensors are${sensors ? "" : " not"} ready`)
@@ -46,8 +42,6 @@ export function initiateHUD(tools, sensors) {
     //     timerId = null;
     // });
 
-    const factories = initiateToolUpgrades();
-
     milestones.forEach((_, i) => {
         $("#milestones").prepend(
             `<button class="milestone-buttons locked-milestones" id="${i}"></button>`,
@@ -55,7 +49,7 @@ export function initiateHUD(tools, sensors) {
         log(`Added milestone ${i}`);
     });
 
-    toolUpgrades.forEach((_, i) => {
+    tools.forEach((_, i) => {
         $("#upgrade-options").prepend(
             `<button class="upgrade-button" data-index=${i}>${i}</button>`,
         );
@@ -70,7 +64,7 @@ export function initiateHUD(tools, sensors) {
     $("#upgrade-options").on("click", ".upgrade-button", function () {
         const i = $(this).data("index");
         log(`Buying ${i}`);
-        factories[i].buy();
+        tools[i].buy();
     });
 
     $("#upgrade-options").on("click", ".sensor-upgrade-button", function () {
@@ -104,6 +98,7 @@ export function addResources(cnt) {
     const unit = $("#milestones").height() / totalTarget;
 
     // Update UI
+    log(`Updating Resouces: ${resources}`)
     $("#resources").text(resources);
     $("#milestones-tracker").height(unit * Math.min(resources, totalTarget));
 

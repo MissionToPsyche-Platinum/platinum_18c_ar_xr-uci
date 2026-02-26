@@ -5,7 +5,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 // Modules
 import "./qr.js";
-import { addResources, initiateHUD } from "./hud.js";
+import { addResources, initHUD } from "./hud.js";
 import {
     addHelper,
     getDebugArrowHelper,
@@ -23,8 +23,7 @@ import {
     getRecticle,
     getRandomAsteroidButton,
     MultiClickAsteroidButton,
-    ManualDrillFactory,
-    CrewManagerFactory,
+    ToolUpgrade,
     SensorUpgrade,
 } from "./components.js";
 
@@ -34,6 +33,7 @@ import "../styles/hud.css";
 
 // Hyperparameters
 import params from "../data/params.json";
+import toolUpgradeData from "../data/tool_upgrades.json";
 import sensorUpgradeData from "../data/sensor_upgrades.json";
 
 // State Variables
@@ -58,6 +58,7 @@ let asteroidGltf;
 let asteroidSpawned = false;
 
 // Upgrades
+let toolUpgrades;
 let sensorUpgrades;
 
 // check for webxr session support
@@ -81,12 +82,14 @@ function isReady(name, model) {
 }
 
 // CALLBACKS
-export function initiateToolUpgrades() {
-    return [new ManualDrillFactory(), new CrewManagerFactory()];
+export function initToolUpgrades() {
+    log("Initiating Tool Upgrades");
+    log(Object.keys(toolUpgradeData[0]))
+    toolUpgrades = toolUpgradeData.map(data => new ToolUpgrade(data))
 }
 
-export function initiateSensorUpgrades() {
-    log("Initiating Sensor Upgrades")
+export function initSensorUpgrades() {
+    log("Initiating Sensor Upgrades");
     sensorUpgrades = Object.fromEntries(
         Object.entries(sensorUpgradeData).map(([key, value]) => {
             return [key, new SensorUpgrade(value)];
@@ -311,8 +314,9 @@ function render(timestamp, frame) {
                 }
                 // Spawn initial buttons after asteroid is spawned
                 if (asteroidSpawned && !buttonsSpawned) {
-                    initiateSensorUpgrades();
-                    initiateHUD([], sensorUpgrades);
+                    initToolUpgrades();
+                    initSensorUpgrades();
+                    initHUD(toolUpgrades, sensorUpgrades);
                     for (
                         let i = 0;
                         i < sensorUpgrades.MAX_BUTTON.getValue();
