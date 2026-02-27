@@ -5,7 +5,7 @@ export default {
     strictPort: true,
     host: "0.0.0.0",
   },
-  base: "/PsycheAR-XR/",
+  base: "/platinum_18c_ar_xr-uci/",
   build: {
     outDir: "./build",
   },
