@@ -1,13 +1,13 @@
 {
     "MAX_BUTTON": {
         "name": "Max Buttons",
-        "initialValue": 10,
+        "initialValue": 1,
         "defaultCost": 60,
         "incrementBy": 0,
         "multiplyBy": 2,
         "costCompounding": false,
-        "valueIncrementBy": 0.1,
-        "valueMultiplyBy": 1,
+        "valueIncrementBy": 0,
+        "valueMultiplyBy": 2,
         "valueCompounding": false
     },
     "MULTICLICK_SPLIT": {

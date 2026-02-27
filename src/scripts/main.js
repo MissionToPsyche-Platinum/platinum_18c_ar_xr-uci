@@ -95,7 +95,7 @@ export function initSensorUpgrades() {
             return [key, new SensorUpgrade(value)];
         }),
     );
-    log(sensorUpgrades.ASTEROID_ROTATION_SPEED.getValue());
+    log(sensorUpgrades.ASTEROID_ROTATION_SPEED.value);
 }
 
 function sessionStart() {
@@ -151,7 +151,7 @@ function onSelect() {
                 else {
                     includeTimeout = false;
                 }
-                timeout = sensorUpgrades.MULTICLICK_TIMEOUT.getValue();
+                timeout = sensorUpgrades.MULTICLICK_TIMEOUT.value;
                 log("MultiClick Detected");
             }
 
@@ -209,7 +209,7 @@ function spawnRandomButton() {
 
     log("Spawning button...");
     const button = getRandomAsteroidButton(
-        sensorUpgrades.MULTICLICK_SPLIT.getValue(),
+        sensorUpgrades.MULTICLICK_SPLIT.value,
     );
     const buttonMesh = button.mesh;
 
@@ -239,6 +239,17 @@ function spawnRandomButton() {
     log("Button spawned (local, asteroid child)");
 
     return true;
+}
+
+function fillRandomButtons(max) {
+    let success = true;
+    if (max - buttons.length === 0) return success;
+    log(`Filling from ${buttons.length} to ${max}`);
+
+    for (let i = buttons.length; i < max; i++) {
+        if (!spawnRandomButton()) success = false;
+    }
+    return success;
 }
 
 // MAIN FUNCTIONS
@@ -317,13 +328,9 @@ function render(timestamp, frame) {
                     initToolUpgrades();
                     initSensorUpgrades();
                     initHUD(toolUpgrades, sensorUpgrades);
-                    for (
-                        let i = 0;
-                        i < sensorUpgrades.MAX_BUTTON.getValue();
-                        i++
-                    ) {
-                        if (spawnRandomButton()) buttonsSpawned = true;
-                    }
+                    buttonsSpawned = fillRandomButtons(
+                        sensorUpgrades.MAX_BUTTON.value,
+                    );
                 }
             } else {
                 reticle.visible = false;
@@ -331,18 +338,12 @@ function render(timestamp, frame) {
         }
     }
 
-    // Rotate asteroid if spawned
     if (asteroidSpawned && asteroidGltf) {
+        // Rotate asteroid if spawned
         asteroidGltf.rotation.x +=
-            sensorUpgrades.ASTEROID_ROTATION_SPEED.getValue();
-        
-        for (
-        let i = buttons.length;
-        i < sensorUpgrades.MAX_BUTTON.getValue();
-        i++
-    ) {
-        spawnRandomButton();
-    }
+            sensorUpgrades.ASTEROID_ROTATION_SPEED.value;
+
+        fillRandomButtons(sensorUpgrades.MAX_BUTTON.value);
     }
 
     buttons.forEach((b) => {
@@ -359,8 +360,6 @@ function render(timestamp, frame) {
             b.mesh.rotation.y += 0.03;
         }
     });
-
-    
 
     renderer.render(scene, camera);
 }

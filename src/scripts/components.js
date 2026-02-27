@@ -58,7 +58,7 @@ export function getRecticle() {
 }
 
 class AsteroidButton {
-    constructor(geometry, color, scale = 1) {
+    constructor(geometry, color, scale = 2) {
         this.ON_SELECT_TIME = 100;
         this.ON_SELECT_COLOR = 0x0000ff;
 
@@ -96,7 +96,6 @@ export class SingleClickAsteroidButton extends AsteroidButton {
         super(
             new THREE.SphereGeometry(0.15, 16, 16), // shape
             0x9b5de5, // purple
-            2,
         );
 
         this.type = "single";
@@ -113,7 +112,6 @@ export class MultiClickAsteroidButton extends AsteroidButton {
         super(
             new THREE.BoxGeometry(0.12, 0.12, 0.12), // shape
             0xf15a24, // orange
-            2,
         );
 
         this.type = "multi";
@@ -139,11 +137,10 @@ export class ToolUpgrade {
         this.resourcesPerSecond = config.resourcesPerSecond;
         this.count = 0;
         this.interval = null;
-
     }
 
     start() {
-        log(`RPS: ${this.resourcesPerSecond}; Count: ${this.count}`)
+        log(`RPS: ${this.resourcesPerSecond}; Count: ${this.count}`);
         if (this.interval) clearInterval(this.interval);
         this.interval = setInterval(
             () => addResources(this.resourcesPerSecond * this.count),
@@ -203,25 +200,23 @@ export class SensorUpgrade {
     }
 
     getTotalCost() {
-        return this.costCompounding
-            ? this.cost * this.multiplyBy + this.incrementBy
-            : this.initCost * this.multiplyBy + this.incrementBy * this.level;
+        return this.cost * this.multiplyBy + this.incrementBy * this.level;
     }
 
-    getValue() {
-        return this.valueCompounding
-            ? this.value * this.valueMultiplyBy + this.valueIncrementBy
-            : this.initValue * this.valueMultiplyBy +
-                  this.valueIncrementBy * this.level;
+    getNextValue() {
+        return (
+            this.value * this.valueMultiplyBy +
+            this.valueIncrementBy * this.level
+        );
     }
 
     buy() {
-        log(`Sensor total cost: ${this.cost}`)
+        log(`Sensor total cost: ${this.cost}`);
         if (!this.isBuyable()) return;
-        log("Sensor upgraded!")
+        log("Sensor upgraded!");
         addResources(-this.cost);
 
-        this.value = this.getValue();
+        this.value = this.getNextValue();
         this.cost = this.getTotalCost();
         this.level++;
 
