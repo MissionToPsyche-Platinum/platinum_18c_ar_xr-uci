@@ -84,8 +84,8 @@ function isReady(name, model) {
 // CALLBACKS
 export function initToolUpgrades() {
     log("Initiating Tool Upgrades");
-    log(Object.keys(toolUpgradeData[0]))
-    toolUpgrades = toolUpgradeData.map(data => new ToolUpgrade(data))
+    log(Object.keys(toolUpgradeData[0]));
+    toolUpgrades = toolUpgradeData.map((data) => new ToolUpgrade(data));
 }
 
 export function initSensorUpgrades() {
@@ -335,6 +335,14 @@ function render(timestamp, frame) {
     if (asteroidSpawned && asteroidGltf) {
         asteroidGltf.rotation.x +=
             sensorUpgrades.ASTEROID_ROTATION_SPEED.getValue();
+        
+        for (
+        let i = buttons.length;
+        i < sensorUpgrades.MAX_BUTTON.getValue();
+        i++
+    ) {
+        spawnRandomButton();
+    }
     }
 
     buttons.forEach((b) => {
@@ -351,6 +359,8 @@ function render(timestamp, frame) {
             b.mesh.rotation.y += 0.03;
         }
     });
+
+    
 
     renderer.render(scene, camera);
 }

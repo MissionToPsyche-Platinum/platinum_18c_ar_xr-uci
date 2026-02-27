@@ -199,7 +199,7 @@ export class SensorUpgrade {
     }
 
     isBuyable() {
-        return getResources() - this.getTotalCost() >= 0;
+        return getResources() - this.cost >= 0;
     }
 
     getTotalCost() {
@@ -216,6 +216,7 @@ export class SensorUpgrade {
     }
 
     buy() {
+        log(`Sensor total cost: ${this.cost}`)
         if (!this.isBuyable()) return;
         log("Sensor upgraded!")
         addResources(-this.cost);
