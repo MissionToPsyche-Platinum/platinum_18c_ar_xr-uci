@@ -44,7 +44,7 @@ export function initHUD(tools, sensors) {
 
     milestones.forEach((_, i) => {
         $("#milestones").prepend(
-            `<button class="milestone-buttons locked-milestones" id="${i}"></button>`,
+            `<button class="milestone-buttons locked-milestones" id="milestone-${i}"></button>`,
         );
         log(`Added milestone ${i}`);
     });
@@ -73,18 +73,18 @@ export function initHUD(tools, sensors) {
         Object.values(sensors)[Math.trunc(i/2 - 2)].buy();
     });
 
-    $("#pop-up").hide();
     $("#upgrade-options").hide();
 
     $("#pop-up-close-button").on("click", function () {
-        $("#pop-up").hide();
+        $("#pop-up").removeClass("visible");
+        $("#milestones-container").removeClass("milestone-reached");
     });
 
     $("#upgrade-trigger").on("click", function () {
         $("#upgrade-options").toggle();
     });
 
-    addResources(100);
+    // addResources(100);
 }
 
 export function getResources() {
@@ -103,22 +103,20 @@ export function addResources(cnt) {
     $("#milestones-tracker").height(unit * Math.min(resources, totalTarget));
 
     milestones.forEach((milestone, i) => {
-        const $el = $(`.milestone-buttons#${i}`); // Select by ID first for efficiency
+        const $el = $(`#milestone-${i}`);
         const localTarget = (totalTarget / milestones.length) * (i + 1);
 
         // Check if it was previously locked
         const wasLocked = $el.hasClass("locked-milestones");
-        // No change after unlocked
         if (!wasLocked) return;
 
-        // Helper to populate the popup
         const showPopUp = () => {
             $("#pop-up-title").text(milestone.title);
             $("#pop-up-text").text(milestone.text);
-            $("#pop-up").show();
+            $("#pop-up").addClass("visible");
+            $("#milestones-container").addClass("milestone-reached");
         };
 
-        // Clear previous listeners to prevent stacking
         $el.off("click");
 
         if (resources >= localTarget) {
@@ -128,10 +126,8 @@ export function addResources(cnt) {
 
             $el.on("click", showPopUp);
 
-            // Auto-open popup only the moment it unlocks
             if (wasLocked) showPopUp();
         } else {
-            // Still locked logic
             $el.on("click", () => {
                 alert(
                     `${localTarget - resources} resources away from this milestone!`,
