@@ -4,15 +4,15 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 // Modules
-import { initQR } from "./scripts/qr.js";
-import { addResources, initiateHUD } from "./scripts/hud.js";
+import { initQR } from "./qr.js";
+import { addResources, initiateHUD } from "./hud.js";
 import {
   addHelper,
   getDebugArrowHelper,
   getDebugBoxHelper,
   getDebugEllipsoidHelper,
   log,
-} from "./scripts/util.js";
+} from "./util.js";
 import {
   getARButton,
   getCamera,
@@ -23,15 +23,15 @@ import {
   getRecticle,
   getRandomAsteroidButton,
   MultiClickAsteroidButton,
-} from "./scripts/components.js";
-import { loadLauncharSDK } from "./scripts/launchar.js";
+} from "./components.js";
+import { loadLauncharSDK } from "./launchar.js";
 
 // Stylesheets
-import "./styles/index.css";
-import "./styles/hud.css";
+import "../styles/index.css";
+import "../styles/hud.css";
 
 // Hyperparameters
-import params from "./data/params.json";
+import params from "../data/params.json";
 
 async function boot() {
   try {
