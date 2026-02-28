@@ -26,7 +26,6 @@ import {
     ToolUpgrade,
     SensorUpgrade,
 } from "./components.js";
-import { loadLauncharSDK } from "./launchar.js";
 
 // Stylesheets
 import "../styles/index.css";
@@ -126,12 +125,14 @@ function onSelect() {
         addHelper(scene, getDebugBoxHelper(asteroidGltf));
     }
 
-  function replaceButton() {
-    function onIntersection() {
-      log("onIntersection activated!");
-      function getButtonIndex(buttonArr, targetButtonMesh) {
-        return buttonArr.map((button) => button.mesh).indexOf(targetButtonMesh);
-      }
+    function replaceButton() {
+        function onIntersection() {
+            log("onIntersection activated!");
+            function getButtonIndex(buttonArr, targetButtonMesh) {
+                return buttonArr
+                    .map((button) => button.mesh)
+                    .indexOf(targetButtonMesh);
+            }
 
             let timeout = 0;
             let includeTimeout = true;
@@ -366,4 +367,3 @@ function render(timestamp, frame) {
 function animate() {
     renderer.setAnimationLoop(render);
 }
-

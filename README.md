@@ -2,7 +2,7 @@ PSYCHE AR/XR For Public Engagement - Kristen, Neil, Wilson, Thuy, Angie!
 
 Instructions for local testing:
 
-1. Make sure you have the SDK from Variant Launch in index.html! (do not push it)
+1. Make sure you have the SDK from Variant Launch in index.hmtl! (do not push it)
 1. npm install
 1. npm run serve-public
 
