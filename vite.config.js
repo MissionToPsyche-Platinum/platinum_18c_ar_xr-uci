@@ -13,7 +13,7 @@ export default {
       jQuery: 'jquery',
     }),
   ],
-  base: "/platinum_18c_ar_xr-uci/",
+  base: "/platinum_18c_ar_xr-uci/dist",
   build: {
     outDir: "./dist",
   },
