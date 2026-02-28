@@ -6,8 +6,12 @@ export default {
     host: "0.0.0.0",
   },
   base: "/platinum_18c_ar_xr-uci/",
-  build: {
-    outDir: "./build",
-  },
-  publicDir: "./public",
+
+  // COMMENTED OUT FOR BUILDING REASONS
+
+  // build: {
+  //   outDir: "./build",
+  // },
+
+  publicDir: "public",
 };
