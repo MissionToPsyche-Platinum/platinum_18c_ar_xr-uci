@@ -1,5 +1,5 @@
 // Dependencies
-import $ from 'jquery';
+import $ from "jquery";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
@@ -268,7 +268,10 @@ function init() {
     scene.add(reticle);
 
     const loader = new GLTFLoader();
-    loader.load("psyche.glb", (gltf) => {
+    const modelPath = `${import.meta.env.BASE_URL}/psyche.glb`;
+    log(modelPath);
+    loader.load(modelPath, (gltf) => {
+        log("Loading Asteroid");
         // Center asteroid
         const tempGltf = gltf.scene;
         const box = new THREE.Box3().setFromObject(tempGltf);
@@ -340,8 +343,7 @@ function render(timestamp, frame) {
 
     if (asteroidSpawned && asteroidGltf) {
         // Rotate asteroid if spawned
-        asteroidGltf.rotation.x +=
-            sensorUpgrades.ASTEROID_ROTATION_SPEED.value;
+        asteroidGltf.rotation.x += sensorUpgrades.ASTEROID_ROTATION_SPEED.value;
 
         fillRandomButtons(sensorUpgrades.MAX_BUTTON.value);
     }
