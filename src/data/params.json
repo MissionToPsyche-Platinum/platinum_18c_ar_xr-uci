@@ -1,5 +1,5 @@
 {
   "ASTEROID_RADIUS": [1.5, 1.15, 1.35],
   "TARGET_RESOURCES": 120,
-  "DEBUG": true
+  "DEBUG": false
 }
