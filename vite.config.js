@@ -7,7 +7,7 @@ export default {
   },
   base: "/platinum_18c_ar_xr-uci/",
   build: {
-    outDir: "./build",
+    outDir: "./dist",
   },
   publicDir: "./public",
 };
