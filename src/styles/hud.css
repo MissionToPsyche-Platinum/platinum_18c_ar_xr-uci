@@ -1,127 +1,262 @@
-* {
-    box-sizing: border-box;
+* { box-sizing: border-box; }
+
+:root {
+  --bg: #070615;
+
+  --panel: rgba(146, 12, 113, 0.82);
+  --panel-soft: rgba(146, 12, 113, 0.55);
+
+  --text: rgba(255, 255, 255, 0.95);
+  --muted: rgba(255, 255, 255, 0.75);
+  --border: rgba(255, 255, 255, 0.18);
+
+  /* bright green for tracker + focus */
+  --green: rgba(140, 255, 140, 0.95);
+  --green-glow: rgba(140, 255, 140, 0.45);
+
+  /* dark green for unlocked circles */
+  --green-dark: rgba(40, 150, 90, 0.95);
+  --green-dark-glow: rgba(60, 200, 110, 0.45);
 }
 
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* HUD layout */
 #hud {
-    position: fixed;
-    flex-direction: column;
-    width: 100dvw;
-    height: 100dvh;
-    display: flex;
-    top: 0;
-    left: 0;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-#hud div {
-    display: flex;
+#hud > div {
+  display: flex;
 }
 
+/* top stats */
 #information {
-    justify-content: space-around;
-    line-height: 0;
-    align-items: center;
-    font-size: 8px;
+  position: fixed;
+  top: env(safe-area-inset-top, 0px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  padding: 14px 16px;
+  background: linear-gradient(to bottom, rgba(7, 6, 21, 0.75), rgba(7, 6, 21, 0));
+
+  font-size: 10px;
+  line-height: 1.2;
 }
 
+#information > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 10px 12px;
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+
+#timer,
+#resources {
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+/* main area */
 #main {
-    flex: 1;
-    align-items: stretch;
-    margin: 5dvw;
-    gap: 5dvw;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 0;
+
+  margin:
+    calc(env(safe-area-inset-top, 0px) + 92px)
+    clamp(12px, 5vw, 32px)
+    clamp(12px, 5vw, 32px);
+
+  gap: clamp(12px, 5vw, 32px);
 }
 
+/* milestones column */
 #milestones-container {
-    height: 100%;
-    width: fit-content;
-    position: relative;
+  align-self: stretch;
+  display: flex;
+
+  height: 90%;
+  margin-top: 30px;
 }
 
 #milestones {
-    background-color: darkgray;
-    border-radius: 10px;
-    align-items: center;
-    justify-content: space-between;
-    flex-direction: column;
-    width: 5dvw;
-    min-height: 100%;
-    padding: 5px;
+  position: relative;
+
+  height: 100%;
+  width: clamp(52px, 6vw, 84px);
+  padding: 10px 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* rail behind the buttons */
+#milestones::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 16px;
+  border-radius: 999px;
+  background: rgba(210, 210, 210, 0.95);
+  z-index: 0;
+}
+
+/* fill */
+#milestones-tracker {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 16px;
+  height: 0;
+
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 14px var(--green-glow);
+  z-index: 1;
 }
 
 .milestone-buttons {
-    height: 10dvw;
-    width: 10dvw;
-    border: 0px;
-    border-radius: 100%;
-    background-color: gray;
-    z-index: 1;
+  position: relative;
+  z-index: 2;
+
+  width: clamp(44px, 8vw, 72px);
+  height: clamp(44px, 8vw, 72px);
+  border-radius: 999px;
+
+  background: rgba(210, 210, 210, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
 }
 
 .unlocked-milestones {
-    background-color: darkgreen;
+  background: var(--green-dark);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.35),
+    0 0 14px var(--green-dark-glow);
 }
 
-#milestones-tracker {
-    position: absolute;
-    background-color: lightgreen;
-    border-radius: 0px 0px 10px 10px;
-    bottom: 0px;
-    height: 0px;
-    width: inherit;
-}
-
+/* milestone popup */
 #pop-up {
-    padding: 10px;
-    border-radius: 10px;
-    background-color: rgba(146, 12, 113, 0.75);
-    flex-direction: column;
-    justify-content: space-between;
-    flex: 1;
+  flex: 1;
+  height: 90%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  padding: clamp(18px, 4.5vw, 32px);
+  border-radius: 18px;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
 }
 
 #pop-up-content {
-    flex-direction: column;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+#pop-up-title,
+#pop-up-text {
+  width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+#pop-up-title {
+  font-size: clamp(26px, 5vw, 36px);
+  font-weight: 800;
 }
 
 #pop-up-text {
-    flex: 1;
-    overflow-y: auto;
-    max-height: 50dvh;
-    padding: 5px;
+  font-size: clamp(18px, 4vw, 26px);
+  line-height: 1.55;
 }
 
+/* upgrade section inside popup */
 #pop-up-info {
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: auto;
+  margin-bottom: 20px;
 }
 
 #pop-up-upgrade-box {
-    width: 50px;
-    height: 50px;
-    background-color: gray;
-    margin: 10px 0px;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  background: rgba(150, 150, 150, 0.6);
 }
 
 #pop-up-upgrade {
-    line-height: 0;
+  font-size: 18px;
 }
 
+/* floating upgrade button */
 #upgrades {
-    flex-direction: column;
-    align-items: end;
-    gap: 10px;
-    position: fixed;
-    bottom: 5dvw;
-    right: 5dvw;
-}
+  position: fixed;
+  bottom: clamp(16px, 5vw, 32px);
+  right: clamp(16px, 5vw, 32px);
 
-#upgrade-options {
-    flex-direction: column;
-    gap: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 10px;
 }
 
 #upgrade-trigger {
-    width: 50px;
-    height: 50px;
-    border-radius: 100%;
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border);
+}
+
+/* focus */
+.milestone-buttons:focus-visible,
+#upgrade-trigger:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto; }
 }
