@@ -4,15 +4,15 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 // Modules
-import { initQR } from "./scripts/qr.js";
-import { addResources, initiateHUD } from "./scripts/hud.js";
+import "./qr.js";
+import { addResources, initiateHUD } from "./hud.js";
 import {
   addHelper,
   getDebugArrowHelper,
   getDebugBoxHelper,
   getDebugEllipsoidHelper,
   log,
-} from "./scripts/util.js";
+} from "./util.js";
 import {
   getARButton,
   getCamera,
@@ -23,30 +23,14 @@ import {
   getRecticle,
   getRandomAsteroidButton,
   MultiClickAsteroidButton,
-} from "./scripts/components.js";
-import { loadLauncharSDK } from "./scripts/launchar.js";
+} from "./components.js";
 
 // Stylesheets
-import "./styles/index.css";
-import "./styles/hud.css";
+import "../styles/index.css";
+import "../styles/hud.css";
 
 // Hyperparameters
-import params from "./data/params.json";
-
-async function boot() {
-  try {
-    await loadLauncharSDK();
-    console.log("Launchar SDK loaded");
-  } catch (err) {
-    console.warn("Launchar SDK failed to load", err);
-  }
-
-  // QR should initialize regardless of SDK success
-  initQR();
-
-  // Now start XR app
-  startApp();
-}
+import params from "../data/params.json";
 
 // State Variables
 // Main
@@ -69,18 +53,16 @@ let buttonsSpawned = false;
 let asteroidGltf;
 let asteroidSpawned = false;
 
-boot();
-
-function startApp() {
-  if ("xr" in navigator) {
-    navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
-      if (supported) {
-        $("#ar-not-supported").hide();
-        init();
-        animate();
-      }
-    });
-  }
+// check for webxr session support
+if ("xr" in navigator) {
+  navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
+    if (supported) {
+      //hide "ar-not-supported"
+      $("#ar-not-supported").hide();
+      init();
+      animate();
+    }
+  });
 }
 
 function isReady(name, model) {
@@ -119,12 +101,14 @@ function onSelect() {
     addHelper(scene, getDebugBoxHelper(asteroidGltf));
   }
 
-  function replaceButton() {
-    function onIntersection() {
-      log("onIntersection activated!");
-      function getButtonIndex(buttonArr, targetButtonMesh) {
-        return buttonArr.map((button) => button.mesh).indexOf(targetButtonMesh);
-      }
+    function replaceButton() {
+        function onIntersection() {
+            log("onIntersection activated!");
+            function getButtonIndex(buttonArr, targetButtonMesh) {
+                return buttonArr
+                    .map((button) => button.mesh)
+                    .indexOf(targetButtonMesh);
+            }
 
       let timeout = 0;
       let includeTimeout = true;

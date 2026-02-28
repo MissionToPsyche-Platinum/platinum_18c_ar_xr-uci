@@ -12,28 +12,20 @@ async function generateQRCode(text) {
 }
 
 async function generateLaunchCode() {
-  try {
-    const url = await window.VLaunch.getLaunchUrl(window.location.href);
-    await generateQRCode(url);
-    console.log("Launch Code Generated");
-  } catch (err) {
-    console.warn("VLaunch failed, falling back to normal QR", err);
-    generateQRCode(window.location.href);
-  }
+  // eslint-disable-next-line no-undef
+  let url = await VLaunch.getLaunchUrl(window.location.href);
+  generateQRCode(url);
+  console.log("Launch Code Generated");
 }
 
-export function initQR() {
-  // If SDK already initialized
-  if (window.VLaunch && window.VLaunch.initialized) {
-    generateLaunchCode();
-    return;
-  }
+//If we have a valid Variant Launch SDK, we can generate a Launch Code. This will allow iOS users to jump right into the app without having to visit the Launch Card page.
+window.addEventListener("vlaunch-initialized", () => {
+  generateLaunchCode();
+});
 
-  // Wait for SDK event
-  window.addEventListener("vlaunch-initialized", () => {
-    generateLaunchCode();
-  });
-
-  // Fallback QR while waiting
-  generateQRCode(window.location.href);
+// eslint-disable-next-line no-undef
+if (VLaunch.initialized) {
+  generateLaunchCode(); // generate a Launch Code for this url
+} else {
+  generateQRCode(window.location.href); // generate regular QR code for this url
 }
