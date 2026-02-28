@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@rollup/plugin-inject": "^5.0.5",
     "cloudflared": "^0.4.0",
     "eslint": "^10.0.0",
     "globals": "^17.3.0",
