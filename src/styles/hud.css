@@ -70,9 +70,15 @@
 }
 
 #pop-up {
-    padding: 10px;
-    border-radius: 10px;
+    padding: 16px;
+    border-radius: 12px;
     background-color: rgba(146, 12, 113, 0.75);
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.45),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
@@ -83,12 +89,21 @@
     flex: 1;
 }
 
+#pop-up-title {
+    font-size: 28px;          
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+
+    color: #ffffff;           /* title color */
+  }
+
 #pop-up-text {
-    flex: 1;
-    overflow-y: auto;
-    max-height: 50dvh;
-    padding: 5px;
-}
+    font-size: 24px;
+    line-height: 1.6;
+    color: #ffffff;
+    font-weight: 400;
+  }
 
 #pop-up-info {
     flex-direction: column;
@@ -120,8 +135,10 @@
     gap: 5px;
 }
 
+/* upgrade button */
+
 #upgrade-trigger {
-    width: 50px;
-    height: 50px;
+    width: 72px;
+    height: 72px;
     border-radius: 100%;
 }
