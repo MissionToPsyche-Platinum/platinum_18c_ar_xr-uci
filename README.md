@@ -1,4 +1,4 @@
-PSYCHE AR/XR For Public Engagement - Kristen, Neil, Wilson, Thuy, Angie!
+PSYCHE AR/XR For Public Engagement - Kristen, Neil, Wilson, Huy, Angie!
 
 Instructions for local testing:
 
