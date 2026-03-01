@@ -77,7 +77,7 @@ export function initHUD(tools, sensors) {
 
     $("#pop-up-close-button").on("click", function () {
         $("#pop-up").removeClass("visible");
-        $("#milestones-container").removeClass("milestone-reached");
+        $("#milestones-container").removeClass("milestone-expand");
     });
 
     $("#upgrade-trigger").on("click", function () {
@@ -114,7 +114,7 @@ export function addResources(cnt) {
             $("#pop-up-title").text(milestone.title);
             $("#pop-up-text").text(milestone.text);
             $("#pop-up").addClass("visible");
-            $("#milestones-container").addClass("milestone-reached");
+            $("#milestones-container").addClass("milestone-expand");
         };
 
         $el.off("click");

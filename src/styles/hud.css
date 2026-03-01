@@ -107,7 +107,7 @@ body {
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-#milestones-container.milestone-reached {
+#milestones-container.milestone-expand {
     opacity: 1;
     transform: scaleX(1);
 }
