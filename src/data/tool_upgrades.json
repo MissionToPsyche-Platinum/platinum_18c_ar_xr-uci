@@ -1,14 +1,26 @@
-[
-    {
+{
+    "MANUAL_DRILL": {
         "name": "Manual Drill",
+        "buyable": true,
         "defaultCost": 20,
-        "incrementBy": 1,
-        "resourcesPerSecond": 1
-    },
-    {
-        "name": "Crew Manager",
-        "defaultCost": 50,
         "incrementBy": 5,
-        "resourcesPerSecond": 3
+        "multiplyBy": 1,
+        "costCompounding": false,
+        "initialValue": 1,
+        "valueIncrementBy": 0,
+        "valueMultiplyBy": 0,
+        "valueCompounding": false
+    },
+    "CREW_MANAGER": {
+        "name": "Crew Manager",
+        "buyable": true,
+        "defaultCost": 50,
+        "incrementBy": 10,
+        "multiplyBy": 1,
+        "costCompounding": false,
+        "initialValue": 3,
+        "valueIncrementBy": 0,
+        "valueMultiplyBy": 0,
+        "valueCompounding": false
     }
-]
+}

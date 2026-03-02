@@ -5,6 +5,8 @@ import { log } from "./util.js";
 import params from "../data/params.json";
 import milestones from "../data/milestones.json";
 
+let rewardMap;
+
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
     $("#end-screen").hide();
@@ -71,22 +73,24 @@ export function initHUD(timer, tools, sensors) {
         log(`Added milestone ${i}`);
     });
 
-    tools.forEach((_, i) => {
+    for (const [i, tool] of Object.values(tools).entries()) {
+        if (!tool.isBuyable()) continue;
         $("#upgrade-options").prepend(
-            `<button class="upgrade-button" data-index=${i}>${i}</button>`,
+            `<button class="tool-upgrade-button" data-index=${i}>${i}</button>`,
         );
-    });
+    }
 
-    for (let i = 0; i < Object.keys(sensors).length; i++) {
+    for (const [i, sensor] of Object.values(sensors).entries()) {
+        if (!sensor.isBuyable()) continue;
         $("#upgrade-options").prepend(
             `<button class="sensor-upgrade-button" data-index=${(i + 2) * 2}>${(i + 2) * 2}</button>`,
         );
     }
 
-    $("#upgrade-options").on("click", ".upgrade-button", function () {
+    $("#upgrade-options").on("click", ".tool-upgrade-button", function () {
         const i = $(this).data("index");
-        log(`Buying ${i}`);
-        tools[i].buy();
+        log(`Buying Tool ${i}`);
+        Object.values(tools)[i].buy();
     });
 
     $("#upgrade-options").on("click", ".sensor-upgrade-button", function () {
@@ -107,7 +111,17 @@ export function initHUD(timer, tools, sensors) {
         $("#upgrade-options").toggle();
     });
 
-    addResources(timer, 100);
+    
+    // Construct reward map
+    rewardMap = {
+        MAX_BUTTON: sensors.MAX_BUTTON,
+        MULTICLICK_SPLIT: sensors.MULTICLICK_SPLIT,
+        MULTICLICK_TIMEOUT: sensors.MULTICLICK_TIMEOUT,
+        MANUAL_DRILL: tools.MANUAL_DRILL,
+        CREW_MANAGER: tools.CREW_MANAGER,
+    };
+
+    // addResources(timer, 100);
     timer.start();
 }
 
@@ -137,9 +151,13 @@ export function addResources(timer, cnt) {
         const showPopUp = () => {
             $("#pop-up-title").text(milestone.title);
             $("#pop-up-text").text(milestone.text);
+            $("#pop-up-upgrade-box").text(milestone.reward);
             $("#pop-up").addClass("visible");
             $("#milestones-container").addClass("milestone-expand");
+            // Timer
             timer.pause();
+            // Reward
+            rewardMap[milestone.reward].reward()
         };
 
         $el.off("click");
