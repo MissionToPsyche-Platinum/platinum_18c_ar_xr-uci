@@ -132,6 +132,8 @@ function onSelect() {
 
     function replaceButton() {
         function onIntersection() {
+            if (timer.isPaused()) return;
+
             log("onIntersection activated!");
             function getButtonIndex(buttonArr, targetButtonMesh) {
                 return buttonArr
@@ -346,26 +348,29 @@ function render(timestamp, frame) {
         }
     }
 
-    if (asteroidSpawned && asteroidGltf) {
-        // Rotate asteroid if spawned
-        asteroidGltf.rotation.x += sensorUpgrades.ASTEROID_ROTATION_SPEED.value;
-        fillRandomButtons(sensorUpgrades.MAX_BUTTON.value);
+    if (!timer.isPaused()) {
+        if (asteroidSpawned && asteroidGltf) {
+            // Rotate asteroid if spawned
+            asteroidGltf.rotation.x +=
+                sensorUpgrades.ASTEROID_ROTATION_SPEED.value;
+            fillRandomButtons(sensorUpgrades.MAX_BUTTON.value);
+        }
+
+        buttons.forEach((b) => {
+            if (!b.mesh) return;
+
+            // Single-click will pulse in size
+            if (b.type === "single") {
+                const s = 1 + 0.1 * Math.sin(timestamp * 0.005);
+                b.mesh.scale.setScalar(s);
+            }
+
+            // Multi-click will spin
+            if (b.type === "multi") {
+                b.mesh.rotation.y += 0.03;
+            }
+        });
     }
-
-    buttons.forEach((b) => {
-        if (!b.mesh) return;
-
-        // Single-click will pulse in size
-        if (b.type === "single") {
-            const s = 1 + 0.1 * Math.sin(timestamp * 0.005);
-            b.mesh.scale.setScalar(s);
-        }
-
-        // Multi-click will spin
-        if (b.type === "multi") {
-            b.mesh.rotation.y += 0.03;
-        }
-    });
 
     renderer.render(scene, camera);
 }

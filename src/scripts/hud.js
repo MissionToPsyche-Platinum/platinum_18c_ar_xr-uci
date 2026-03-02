@@ -17,40 +17,45 @@ export class Timer {
         this.timerId = null;
         this.timeLimit = params.TIME_LIMIT;
     }
-    
+
     tick() {
         this.second++;
-        
+
         if (this.second === 60) {
             this.minute++;
             this.second = 0;
         }
-        
+
         const formattedSecond = String(this.second).padStart(2, "0");
         $("#timer").text(`${this.minute}:${formattedSecond}`);
-        
+
         if (this.isTimesUp()) this.onTimesUp();
     }
-    
+
     start() {
         if (!this.timerId) {
             // prevent multiple intervals
             this.timerId = setInterval(() => this.tick(), 1000);
         }
     }
-    
+
     pause() {
         clearInterval(this.timerId);
         this.timerId = null;
     }
-    
+
+    isPaused() {
+        return this.timerId === null;
+    }
+
     isTimesUp() {
         return this.minute * 60 + this.second >= this.timeLimit;
     }
-    
+
     onTimesUp() {
         $("#hud").hide();
         $("#end-screen").show();
+        this.pause();
     }
 }
 
