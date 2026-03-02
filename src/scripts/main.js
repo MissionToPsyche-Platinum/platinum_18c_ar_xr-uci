@@ -7,7 +7,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 // Modules
 import "./qr.js";
-import { addResources, initHUD } from "./hud.js";
+import { addResources, initHUD, Timer } from "./hud.js";
 import {
     addHelper,
     getDebugArrowHelper,
@@ -62,6 +62,9 @@ let asteroidSpawned = false;
 // Upgrades
 let toolUpgrades;
 let sensorUpgrades;
+
+// Timer
+const timer = new Timer();
 
 // check for webxr session support
 if ("xr" in navigator) {
@@ -140,7 +143,7 @@ function onSelect() {
             let includeTimeout = true;
 
             // Add Resource
-            addResources(1);
+            addResources(timer, 1);
 
             // Get hit button
             const hitButtonMesh = intersects[0].object;
@@ -332,7 +335,7 @@ function render(timestamp, frame) {
                 if (asteroidSpawned && !buttonsSpawned) {
                     initToolUpgrades();
                     initSensorUpgrades();
-                    initHUD(toolUpgrades, sensorUpgrades);
+                    initHUD(timer, toolUpgrades, sensorUpgrades);
                     buttonsSpawned = fillRandomButtons(
                         sensorUpgrades.MAX_BUTTON.value,
                     );
@@ -346,7 +349,6 @@ function render(timestamp, frame) {
     if (asteroidSpawned && asteroidGltf) {
         // Rotate asteroid if spawned
         asteroidGltf.rotation.x += sensorUpgrades.ASTEROID_ROTATION_SPEED.value;
-
         fillRandomButtons(sensorUpgrades.MAX_BUTTON.value);
     }
 
