@@ -5,6 +5,7 @@ import { log } from "./util.js";
 import params from "../data/params.json";
 import milestones from "../data/milestones.json";
 
+let globalTimer;
 let rewardMap;
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -111,7 +112,9 @@ export function initHUD(timer, tools, sensors) {
         $("#upgrade-options").toggle();
     });
 
-    
+    // Construct timer
+    globalTimer = timer
+
     // Construct reward map
     rewardMap = {
         MAX_BUTTON: sensors.MAX_BUTTON,
@@ -121,15 +124,15 @@ export function initHUD(timer, tools, sensors) {
         CREW_MANAGER: tools.CREW_MANAGER,
     };
 
-    // addResources(timer, 100);
-    timer.start();
+    addResources(19);
+    globalTimer.start();
 }
 
 export function getResources() {
     return Number($("#resources").text());
 }
 
-export function addResources(timer, cnt) {
+export function addResources(cnt) {
     const currCnt = Number($("#resources").text());
     const resources = currCnt + cnt;
     const totalTarget = params.TARGET_RESOURCES;
@@ -154,8 +157,9 @@ export function addResources(timer, cnt) {
             $("#pop-up-upgrade-box").text(milestone.reward);
             $("#pop-up").addClass("visible");
             $("#milestones-container").addClass("milestone-expand");
+            
             // Timer
-            timer.pause();
+            globalTimer.pause();
             // Reward
             rewardMap[milestone.reward].reward()
         };

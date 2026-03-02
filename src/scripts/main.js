@@ -149,7 +149,7 @@ function onSelect() {
             let includeTimeout = true;
 
             // Add Resource
-            addResources(timer, 1);
+            addResources(1);
 
             // Get hit button
             const hitButtonMesh = intersects[0].object;
