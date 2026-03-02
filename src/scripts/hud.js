@@ -51,11 +51,12 @@ export function initHUD(tools, sensors) {
         log(`Added milestone ${i}`);
     });
 
-    tools.forEach((_, i) => {
+    for (const [i, tool] of Object.values(tools).entries()) {
+        if (!tool.isBuyable()) continue;
         $("#upgrade-options").prepend(
-            `<button class="upgrade-button" data-index=${i}>${i}</button>`,
+            `<button class="tool-upgrade-button" data-index=${i}>${i}</button>`,
         );
-    });
+    }
 
     for (const [i, sensor] of Object.values(sensors).entries()) {
         if (!sensor.isBuyable()) continue;
@@ -64,10 +65,10 @@ export function initHUD(tools, sensors) {
         );
     }
 
-    $("#upgrade-options").on("click", ".upgrade-button", function () {
+    $("#upgrade-options").on("click", ".tool-upgrade-button", function () {
         const i = $(this).data("index");
-        log(`Buying ${i}`);
-        tools[i].buy();
+        log(`Buying Tool ${i}`);
+        Object.values(tools)[i].buy();
     });
 
     $("#upgrade-options").on("click", ".sensor-upgrade-button", function () {
@@ -93,11 +94,11 @@ export function initHUD(tools, sensors) {
         MAX_BUTTON: sensors.MAX_BUTTON,
         MULTICLICK_SPLIT: sensors.MULTICLICK_SPLIT,
         MULTICLICK_TIMEOUT: sensors.MULTICLICK_TIMEOUT,
-        MANUAL_DRILL: tools[0],
-        CREW_MANAGER: tools[1],
+        MANUAL_DRILL: tools.MANUAL_DRILL,
+        CREW_MANAGER: tools.CREW_MANAGER,
     };
 
-    // addResources(100);
+    addResources(19);
 }
 
 export function getResources() {

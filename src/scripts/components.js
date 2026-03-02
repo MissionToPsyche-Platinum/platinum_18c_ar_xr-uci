@@ -129,69 +129,26 @@ export function getRandomAsteroidButton(multiClickButtonsRate) {
     return new SingleClickAsteroidButton();
 }
 
-export class ToolUpgrade {
-    constructor(config) {
-        this.name = config.name;
-        this.defaultCost = config.defaultCost;
-        this.incrementBy = config.incrementBy;
-        this.resourcesPerSecond = config.resourcesPerSecond;
-        this.count = 0;
-        this.interval = null;
-    }
-
-    start() {
-        log(`RPS: ${this.resourcesPerSecond}; Count: ${this.count}`);
-        if (this.interval) clearInterval(this.interval);
-        this.interval = setInterval(
-            () => addResources(this.resourcesPerSecond * this.count),
-            1000,
-        );
-    }
-
-    getCount() {
-        return this.count;
-    }
-
-    getTotalCost() {
-        return this.defaultCost + this.incrementBy * this.count;
-    }
-
-    isBuyable() {
-        return getResources() - this.getTotalCost() >= 0;
-    }
-
-    buy() {
-        if (this.isBuyable()) {
-            log(`Tool upgraded! Cost: ${this.getTotalCost()}`);
-            addResources(-this.getTotalCost());
-            this.count++;
-            this.start();
-        } else {
-            log("Not enough resources!");
-        }
-    }
-}
-
-export class SensorUpgrade {
+class Upgrade {
     constructor(config) {
         // Core Identity
         this.name = config.name;
         this.buyable = config.buyable;
-        
+
         // Cost Logic
         this.initCost = config.defaultCost;
         this.cost = config.defaultCost;
         this.incrementBy = config.incrementBy;
         this.multiplyBy = Math.max(1, config.multiplyBy);
         this.costCompounding = config.costCompounding;
-        
+
         // Value Logic
         this.initValue = config.initialValue;
         this.value = config.initialValue;
         this.valueIncrementBy = config.valueIncrementBy;
         this.valueMultiplyBy = Math.max(1, config.valueMultiplyBy);
         this.valueCompounding = config.valueCompounding;
-        
+
         // Tracking state
         this.level = 0;
         this.locked = true;
@@ -225,20 +182,55 @@ export class SensorUpgrade {
     }
 
     buy() {
+        log(`Buying ${this.name} (Locked: ${this.locked})`)
         if (this.locked) return;
-        log(`Sensor total cost: ${this.cost}`);
+        log(`${this.name} total cost: ${this.cost}`);
         if (!this.hasEnoughResources()) return;
-        log("Sensor upgraded!");
+        log(`${this.name} upgraded!`);
         addResources(-this.cost);
         this.reward();
     }
-    
+
+    reward() {}
+}
+
+export class ToolUpgrade extends Upgrade {
+    constructor(config) {
+        super(config);
+    }
+
+    start() {
+        log(`RPS: ${this.value}; Count: ${this.level}`);
+        if (this.interval) clearInterval(this.interval);
+        this.interval = setInterval(
+            () => addResources(this.value * this.level),
+            1000,
+        );
+    }
+
+    reward() {
+        if (this.locked) {
+            log(`Unlocked ${this.name}`)
+            this.unlock();
+            return;
+        }
+        
+        this.level++;
+        this.start();
+    }
+}
+
+export class SensorUpgrade extends Upgrade {
+    constructor(config) {
+        super(config);
+    }
+
     reward() {
         if (this.locked) {
             this.unlock();
             return;
         }
-        
+
         this.value = this.getNextValue();
         this.cost = this.getTotalCost();
         this.level++;

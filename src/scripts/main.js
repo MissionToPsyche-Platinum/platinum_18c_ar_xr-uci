@@ -86,8 +86,12 @@ function isReady(name, model) {
 // CALLBACKS
 export function initToolUpgrades() {
     log("Initiating Tool Upgrades");
-    log(Object.keys(toolUpgradeData[0]));
-    toolUpgrades = toolUpgradeData.map((data) => new ToolUpgrade(data));
+    toolUpgrades = Object.fromEntries(
+        Object.entries(toolUpgradeData).map(([key, value]) => {
+            return [key, new ToolUpgrade(value)];
+        }),
+    );
+    log(toolUpgrades.MANUAL_DRILL.value);
 }
 
 export function initSensorUpgrades() {

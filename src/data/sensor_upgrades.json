@@ -2,11 +2,11 @@
     "MAX_BUTTON": {
         "name": "Hotspots Multiplier",
         "buyable": true,
-        "initialValue": 1,
         "defaultCost": 10,
         "incrementBy": 0,
         "multiplyBy": 2,
         "costCompounding": false,
+        "initialValue": 1,
         "valueIncrementBy": 0,
         "valueMultiplyBy": 2,
         "valueCompounding": false
@@ -14,11 +14,11 @@
     "MULTICLICK_SPLIT": {
         "name": "Multiclick Split",
         "buyable": true,
-        "initialValue": 0.1,
         "defaultCost": 60,
         "incrementBy": 0,
         "multiplyBy": 2,
         "costCompounding": false,
+        "initialValue": 0.1,
         "valueIncrementBy": 0.1,
         "valueMultiplyBy": 1,
         "valueCompounding": false
@@ -26,11 +26,11 @@
     "MULTICLICK_TIMEOUT": {
         "name": "Multiclick Timeout",
         "buyable": true,
-        "initialValue": 1000,
         "defaultCost": 55,
         "incrementBy": 0,
         "multiplyBy": 2,
         "costCompounding": false,
+        "initialValue": 1000,
         "valueIncrementBy": 0,
         "valueMultiplyBy": 2,
         "valueCompounding": false
@@ -38,11 +38,11 @@
     "ASTEROID_ROTATION_SPEED": {
         "name": "Asteroid Rotation Speed",
         "buyable": false,
-        "initialValue": 0.006,
         "defaultCost": 40,
         "incrementBy": 0,
         "multiplyBy": 2,
         "costCompounding": false,
+        "initialValue": 0.006,
         "valueIncrementBy": 0,
         "valueMultiplyBy": 2,
         "valueCompounding": true
