@@ -5,6 +5,8 @@ import { log } from "./util.js";
 import params from "../data/params.json";
 import milestones from "../data/milestones.json";
 
+let rewardMap;
+
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
 });
@@ -12,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 export function initHUD(tools, sensors) {
     $("#hud").show();
     $("#instructions").hide();
-    log(`Sensors are${sensors ? "" : " not"} ready`)
+    log(`Sensors are${sensors ? "" : " not"} ready`);
 
     // let minute = 0;
     // let second = 0;
@@ -54,13 +56,14 @@ export function initHUD(tools, sensors) {
             `<button class="upgrade-button" data-index=${i}>${i}</button>`,
         );
     });
-    
-    for (let i = 0; i < Object.keys(sensors).length; i++) {
+
+    for (const [i, sensor] of Object.values(sensors).entries()) {
+        if (!sensor.isBuyable()) continue;
         $("#upgrade-options").prepend(
-            `<button class="sensor-upgrade-button" data-index=${(i+2)*2}>${(i+2)*2}</button>`,
+            `<button class="sensor-upgrade-button" data-index=${(i + 2) * 2}>${(i + 2) * 2}</button>`,
         );
-    };
-    
+    }
+
     $("#upgrade-options").on("click", ".upgrade-button", function () {
         const i = $(this).data("index");
         log(`Buying ${i}`);
@@ -70,7 +73,7 @@ export function initHUD(tools, sensors) {
     $("#upgrade-options").on("click", ".sensor-upgrade-button", function () {
         const i = $(this).data("index");
         log(`Buying Sensor ${i}`);
-        Object.values(sensors)[Math.trunc(i/2 - 2)].buy();
+        Object.values(sensors)[Math.trunc(i / 2 - 2)].buy();
     });
 
     $("#upgrade-options").hide();
@@ -83,6 +86,16 @@ export function initHUD(tools, sensors) {
     $("#upgrade-trigger").on("click", function () {
         $("#upgrade-options").toggle();
     });
+
+    
+    // Construct reward map
+    rewardMap = {
+        MAX_BUTTON: sensors.MAX_BUTTON,
+        MULTICLICK_SPLIT: sensors.MULTICLICK_SPLIT,
+        MULTICLICK_TIMEOUT: sensors.MULTICLICK_TIMEOUT,
+        MANUAL_DRILL: tools[0],
+        CREW_MANAGER: tools[1],
+    };
 
     // addResources(100);
 }
@@ -98,7 +111,7 @@ export function addResources(cnt) {
     const unit = $("#milestones").height() / totalTarget;
 
     // Update UI
-    log(`Updating Resouces: ${resources}`)
+    log(`Updating Resouces: ${resources}`);
     $("#resources").text(resources);
     $("#milestones-tracker").height(unit * Math.min(resources, totalTarget));
 
@@ -113,8 +126,11 @@ export function addResources(cnt) {
         const showPopUp = () => {
             $("#pop-up-title").text(milestone.title);
             $("#pop-up-text").text(milestone.text);
+            $("#pop-up-upgrade-box").text(milestone.reward);
             $("#pop-up").addClass("visible");
             $("#milestones-container").addClass("milestone-expand");
+            // Reward
+            rewardMap[milestone.reward].reward()
         };
 
         $el.off("click");

@@ -176,27 +176,41 @@ export class SensorUpgrade {
     constructor(config) {
         // Core Identity
         this.name = config.name;
-
+        this.buyable = config.buyable;
+        
         // Cost Logic
         this.initCost = config.defaultCost;
         this.cost = config.defaultCost;
         this.incrementBy = config.incrementBy;
         this.multiplyBy = Math.max(1, config.multiplyBy);
         this.costCompounding = config.costCompounding;
-
+        
         // Value Logic
         this.initValue = config.initialValue;
         this.value = config.initialValue;
         this.valueIncrementBy = config.valueIncrementBy;
         this.valueMultiplyBy = Math.max(1, config.valueMultiplyBy);
         this.valueCompounding = config.valueCompounding;
-
+        
         // Tracking state
         this.level = 0;
+        this.locked = true;
+    }
+
+    hasEnoughResources() {
+        return getResources() - this.cost >= 0;
     }
 
     isBuyable() {
-        return getResources() - this.cost >= 0;
+        return this.buyable;
+    }
+
+    isUnlocked() {
+        return !this.locked;
+    }
+
+    unlock() {
+        this.locked = false;
     }
 
     getTotalCost() {
@@ -211,11 +225,20 @@ export class SensorUpgrade {
     }
 
     buy() {
+        if (this.locked) return;
         log(`Sensor total cost: ${this.cost}`);
-        if (!this.isBuyable()) return;
+        if (!this.hasEnoughResources()) return;
         log("Sensor upgraded!");
         addResources(-this.cost);
-
+        this.reward();
+    }
+    
+    reward() {
+        if (this.locked) {
+            this.unlock();
+            return;
+        }
+        
         this.value = this.getNextValue();
         this.cost = this.getTotalCost();
         this.level++;
