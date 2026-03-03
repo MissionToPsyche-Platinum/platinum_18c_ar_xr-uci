@@ -7,6 +7,7 @@ import milestones from "../data/milestones.json";
 
 let globalTimer;
 let rewardMap;
+let maxResources = 0;
 
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
@@ -15,22 +16,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 export class Timer {
     constructor() {
-        this.minute = 0;
-        this.second = 0;
+        this.timeInSecond = params.TIME_LIMIT;
         this.timerId = null;
-        this.timeLimit = params.TIME_LIMIT;
     }
 
     tick() {
-        this.second++;
+        this.timeInSecond--;
 
-        if (this.second === 60) {
-            this.minute++;
-            this.second = 0;
-        }
+        const minute = Math.floor(this.timeInSecond / 60);
+        const second = this.timeInSecond % 60;
 
-        const formattedSecond = String(this.second).padStart(2, "0");
-        $("#timer").text(`${this.minute}:${formattedSecond}`);
+        const formattedSecond = String(second).padStart(2, "0");
+        $("#timer").text(`${minute}:${formattedSecond}`);
 
         if (this.isTimesUp()) this.onTimesUp();
     }
@@ -52,7 +49,7 @@ export class Timer {
     }
 
     isTimesUp() {
-        return this.minute * 60 + this.second >= this.timeLimit;
+        return this.timeInSecond <= 0;
     }
 
     onTimesUp() {
@@ -113,7 +110,7 @@ export function initHUD(timer, tools, sensors) {
     });
 
     // Construct timer
-    globalTimer = timer
+    globalTimer = timer;
 
     // Construct reward map
     rewardMap = {
@@ -133,7 +130,7 @@ export function getResources() {
 }
 
 export function addResources(cnt) {
-    const currCnt = Number($("#resources").text());
+    const currCnt = getResources();
     const resources = currCnt + cnt;
     const totalTarget = params.TARGET_RESOURCES;
     const unit = $("#milestones").height() / totalTarget;
@@ -141,7 +138,8 @@ export function addResources(cnt) {
     // Update UI
     log(`Updating Resouces: ${resources}`);
     $("#resources").text(resources);
-    $("#milestones-tracker").height(unit * Math.min(resources, totalTarget));
+    maxResources = Math.max(maxResources, resources);
+    $("#milestones-tracker").height(unit * Math.min(maxResources, totalTarget));
 
     milestones.forEach((milestone, i) => {
         const $el = $(`#milestone-${i}`);
@@ -157,11 +155,11 @@ export function addResources(cnt) {
             $("#pop-up-upgrade-box").text(milestone.reward);
             $("#pop-up").addClass("visible");
             $("#milestones-container").addClass("milestone-expand");
-            
+
             // Timer
             globalTimer.pause();
             // Reward
-            rewardMap[milestone.reward].reward()
+            rewardMap[milestone.reward].reward();
         };
 
         $el.off("click");
