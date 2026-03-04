@@ -1,4 +1,4 @@
-import inject from '@rollup/plugin-inject';
+import inject from "@rollup/plugin-inject";
 
 // vite.config.js
 export default {
@@ -9,13 +9,13 @@ export default {
   },
   plugins: [
     inject({
-      $: 'jquery',
-      jQuery: 'jquery',
+      $: "jquery",
+      jQuery: "jquery",
     }),
   ],
-  base: "/platinum_18c_ar_xr-uci/dist",
+  base: "/platinum_18c_ar_xr-uci/",
   build: {
-    outDir: "./dist",
+    outDir: "./docs",
   },
   publicDir: "./public",
 };
