@@ -75,7 +75,7 @@ export function initHUD(timer, tools, sensors) {
     for (const i in milestones) {
         log(`Added milestone ${i}`);
         $("#milestones").prepend(
-            `<button class="milestone-buttons locked-milestones" data-index=${i}></button>`,
+            `<button class="milestone-buttons locked-milestones" id=${i} data-index=${i}></button>`,
         );
     };
 
@@ -134,6 +134,7 @@ export function initHUD(timer, tools, sensors) {
         CREW_MANAGER: tools.CREW_MANAGER,
     };
 
+    addResources(39);
     globalTimer.start();
 }
 
@@ -154,7 +155,7 @@ export function addResources(cnt) {
     $("#milestones-tracker").height(unit * Math.min(maxResources, totalTarget));
 
     milestones.forEach((milestone, i) => {
-        const $el = $(`#milestone-${i}`);
+        const $el = $(`.milestone-buttons#${i}`);
         const localTarget = resourceUnit * (i + 1);
 
         // Check if it was previously locked
