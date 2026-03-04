@@ -6,7 +6,7 @@
         "incrementBy": 0,
         "multiplyBy": 2,
         "costCompounding": false,
-        "initialValue": 1,
+        "initialValue": 4,
         "valueIncrementBy": 0,
         "valueMultiplyBy": 2,
         "valueCompounding": false

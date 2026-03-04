@@ -12,6 +12,7 @@ let maxResources = 0;
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
     $("#end-screen").hide();
+    $("loading").css("opacity", "0");
 });
 
 export class Timer {
@@ -60,8 +61,9 @@ export class Timer {
 }
 
 export function initHUD(timer, tools, sensors) {
+    hideNonHUD();
+
     $("#hud").show();
-    $("#instructions").hide();
     log(`Sensors are${sensors ? "" : " not"} ready`);
 
     milestones.forEach((_, i) => {
@@ -180,4 +182,25 @@ export function addResources(cnt) {
             });
         }
     });
+}
+
+export function startLoadingPhase() {
+    $("#loading").css("opacity", "1");
+    $("#tracking-prompt").hide();
+}
+
+export function startScanningPhase() {
+    $("#loading").hide();
+    $("#tracking-prompt").show();
+}
+
+export function startAnchoringPhase() {
+    $("#tracking-prompt").hide();
+    $("#instructions").show();
+}
+
+function hideNonHUD() {
+    $("#loading").hide();
+    $("#tracking-prompt").hide();
+    $("#instructions").hide();
 }

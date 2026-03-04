@@ -7,7 +7,14 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 // Modules
 import "./qr.js";
-import { addResources, initHUD, Timer } from "./hud.js";
+import {
+    Timer,
+    initHUD,
+    addResources,
+    startAnchoringPhase,
+    startLoadingPhase,
+    startScanningPhase,
+} from "./hud.js";
 import {
     addHelper,
     getDebugArrowHelper,
@@ -109,7 +116,7 @@ export function initSensorUpgrades() {
 
 function sessionStart() {
     planeFound = false;
-    $("#tracking-prompt").show();
+    startLoadingPhase();
 }
 
 function onSelect() {
@@ -292,6 +299,8 @@ function init() {
         modelWrapper.add(tempGltf);
         // Assign result
         asteroidGltf = modelWrapper;
+        // Change phase
+        startScanningPhase();
     });
 
     container.append(renderer.domElement);
@@ -304,21 +313,25 @@ function render(timestamp, frame) {
         const referenceSpace = renderer.xr.getReferenceSpace();
         const session = renderer.xr.getSession();
 
-        if (hitTestSourceRequested === false) {
-            session.requestReferenceSpace("viewer").then((referenceSpace) => {
+        if (asteroidGltf && !asteroidSpawned) {
+            if (hitTestSourceRequested === false) {
                 session
-                    .requestHitTestSource({ space: referenceSpace })
-                    .then((source) => {
-                        hitTestSource = source;
+                    .requestReferenceSpace("viewer")
+                    .then((referenceSpace) => {
+                        session
+                            .requestHitTestSource({ space: referenceSpace })
+                            .then((source) => {
+                                hitTestSource = source;
+                            });
                     });
-            });
 
-            session.addEventListener("end", () => {
-                hitTestSourceRequested = false;
-                hitTestSource = null;
-            });
+                session.addEventListener("end", () => {
+                    hitTestSourceRequested = false;
+                    hitTestSource = null;
+                });
 
-            hitTestSourceRequested = true;
+                hitTestSourceRequested = true;
+            }
         }
 
         if (hitTestSource) {
@@ -327,8 +340,7 @@ function render(timestamp, frame) {
             if (hitTestResults.length) {
                 if (!planeFound) {
                     planeFound = true;
-                    $("#tracking-prompt").hide();
-                    $("#instructions").show();
+                    startAnchoringPhase();
                 }
                 const hit = hitTestResults[0];
                 if (!asteroidSpawned) {
