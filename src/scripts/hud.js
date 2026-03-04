@@ -134,7 +134,6 @@ export function initHUD(timer, tools, sensors) {
         CREW_MANAGER: tools.CREW_MANAGER,
     };
 
-    addResources(39);
     globalTimer.start();
 }
 
