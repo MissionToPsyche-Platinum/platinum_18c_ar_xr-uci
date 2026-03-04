@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-import { log } from "./util.js";
+import { log, notify } from "./util.js";
 
 import params from "../data/params.json";
 import milestones from "../data/milestones.json";
@@ -176,7 +176,7 @@ export function addResources(cnt) {
             if (wasLocked) showPopUp();
         } else {
             $el.on("click", () => {
-                alert(
+                notify(
                     `${localTarget - resources} resources away from this milestone!`,
                 );
             });

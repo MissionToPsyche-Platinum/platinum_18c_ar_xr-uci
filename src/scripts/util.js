@@ -12,6 +12,14 @@ export function log(text) {
     }
 }
 
+export function notify(text) {
+    const $bar = $("#notification-bar");
+    $("#notification-text").text(text);
+    $bar.css("animation", "none");
+    $bar[0].offsetWidth; 
+    $bar.css("animation", "enter-and-exit 5s forwards");
+}
+
 export function addHelper(parent, child) {
     if (params.DEBUG) {
         parent.add(child);

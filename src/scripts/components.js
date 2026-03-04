@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 
-import { log } from "./util.js";
+import { log, notify } from "./util.js";
 import { addResources, getResources } from "./hud.js";
 
 export function getCamera() {
@@ -182,10 +182,18 @@ class Upgrade {
     }
 
     buy() {
-        log(`Buying ${this.name} (Locked: ${this.locked})`)
-        if (this.locked) return;
+        log(`Buying ${this.name} (Locked: ${this.locked})`);
+        if (this.locked) {
+            notify(`${this.name} is locked!`);
+            return;
+        }
+
         log(`${this.name} total cost: ${this.cost}`);
-        if (!this.hasEnoughResources()) return;
+        if (!this.hasEnoughResources()) {
+            notify(`Cost: ${this.cost}. You don't have enough resources!`);
+            return;
+        }
+
         log(`${this.name} upgraded!`);
         addResources(-this.cost);
         this.reward();
@@ -210,11 +218,11 @@ export class ToolUpgrade extends Upgrade {
 
     reward() {
         if (this.locked) {
-            log(`Unlocked ${this.name}`)
+            log(`Unlocked ${this.name}`);
             this.unlock();
             return;
         }
-        
+
         this.level++;
         this.start();
     }

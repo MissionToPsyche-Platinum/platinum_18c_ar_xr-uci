@@ -279,3 +279,33 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto; }
 }
+
+/* notification bar */
+#notification-bar {
+    position: fixed;
+    width: 100dvw;
+    bottom: 3dvh;
+    right: 0;
+    transform: translateY(200%);
+}
+
+#notification-text {
+    margin: auto;
+    width: fit-content;
+    min-width: 80%;
+    max-width: 90%;
+    text-align: center;
+    background-color: lightcoral;
+    border-radius: 10px;
+    padding: 5px 0px;
+    color: white;
+}
+
+@keyframes enter-and-exit {
+    0%, 100% {
+        transform: translateY(200%);
+    }
+    10%, 90% {
+        transform: translateY(0%);
+    }
+}
