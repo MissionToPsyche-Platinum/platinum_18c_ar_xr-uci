@@ -41,21 +41,21 @@ body {
 
 /* top stats */
 #information {
-  position: fixed;
-  top: env(safe-area-inset-top, 0px);
-  left: 0;
-  right: 0;
   z-index: 20;
 
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  justify-content: right;
   gap: 12px;
 
-  padding: 14px 16px;
   background: linear-gradient(to bottom, rgba(7, 6, 21, 0.75), rgba(7, 6, 21, 0));
 
   font-size: 10px;
   line-height: 1.2;
+
+  padding: clamp(12px, 5vw, 32px);
+  padding-bottom: 0;
+
+  text-align: center;
 }
 
 #information > div {
@@ -69,6 +69,9 @@ body {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border);
   backdrop-filter: blur(8px);
+
+  width: 25dvw;
+  height: 25dvw;
 }
 
 #timer,
@@ -86,11 +89,10 @@ body {
   min-height: 0;
 
   margin:
-    calc(env(safe-area-inset-top, 0px) + 92px)
     clamp(12px, 5vw, 32px)
     clamp(12px, 5vw, 32px);
 
-  gap: clamp(12px, 5vw, 32px);
+  gap: 12px;
 }
 
 /* milestones column */
@@ -98,8 +100,7 @@ body {
     align-self: stretch;
     display: flex;
 
-    height: 90%;
-    margin-top: 30px;
+    height: 100%;
 
     opacity: 0.35;
     transform: scaleX(0.65);
@@ -179,7 +180,7 @@ body {
 /* milestone popup */
 #pop-up {
   flex: 1;
-  height: 90%;
+  height: 100%;
 
   display: flex;
   flex-direction: column;
@@ -284,20 +285,19 @@ body {
 #notification-bar {
     position: fixed;
     width: 100dvw;
-    bottom: 3dvh;
     right: 0;
+    bottom: clamp(16px, 5dvw, 32px);
     transform: translateY(200%);
+    transform-origin: bottom center;
 }
 
 #notification-text {
     margin: auto;
     width: fit-content;
-    min-width: 80%;
-    max-width: 90%;
     text-align: center;
     background-color: lightcoral;
     border-radius: 10px;
-    padding: 5px 0px;
+    padding: 5px 10px;
     color: white;
 }
 
@@ -306,6 +306,6 @@ body {
         transform: translateY(200%);
     }
     10%, 90% {
-        transform: translateY(0%);
+        transform: translateY(0);
     }
 }

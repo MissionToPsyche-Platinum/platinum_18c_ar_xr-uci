@@ -7,13 +7,19 @@ import milestones from "../data/milestones.json";
 
 let globalTimer;
 let rewardMap;
-let maxResources = 0;
+let maxResources = 0; 
+
+const resourceUnit = params.TARGET_RESOURCES / milestones.length;
 
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
     $("#end-screen").hide();
     $("loading").css("opacity", "0");
 });
+
+function notEnoughResources(localTarget, resources = 0) {
+    notify(`${localTarget - resources} resources away from this milestone!`);
+}
 
 export class Timer {
     constructor() {
@@ -66,11 +72,16 @@ export function initHUD(timer, tools, sensors) {
     $("#hud").show();
     log(`Sensors are${sensors ? "" : " not"} ready`);
 
-    milestones.forEach((_, i) => {
-        $("#milestones").prepend(
-            `<button class="milestone-buttons locked-milestones" id="milestone-${i}"></button>`,
-        );
+    for (const i in milestones) {
         log(`Added milestone ${i}`);
+        $("#milestones").prepend(
+            `<button class="milestone-buttons locked-milestones" data-index=${i}></button>`,
+        );
+    };
+
+    $("#milestones").on("click", ".locked-milestones", function () {
+        const i = $(this).data("index");
+        notEnoughResources(resourceUnit * (i + 1));
     });
 
     for (const [i, tool] of Object.values(tools).entries()) {
@@ -123,7 +134,6 @@ export function initHUD(timer, tools, sensors) {
         CREW_MANAGER: tools.CREW_MANAGER,
     };
 
-    addResources(19);
     globalTimer.start();
 }
 
@@ -145,7 +155,7 @@ export function addResources(cnt) {
 
     milestones.forEach((milestone, i) => {
         const $el = $(`#milestone-${i}`);
-        const localTarget = (totalTarget / milestones.length) * (i + 1);
+        const localTarget = resourceUnit * (i + 1);
 
         // Check if it was previously locked
         const wasLocked = $el.hasClass("locked-milestones");
@@ -160,8 +170,6 @@ export function addResources(cnt) {
 
             // Timer
             globalTimer.pause();
-            // Reward
-            rewardMap[milestone.reward].reward();
         };
 
         $el.off("click");
@@ -173,13 +181,13 @@ export function addResources(cnt) {
 
             $el.on("click", showPopUp);
 
-            if (wasLocked) showPopUp();
+            if (wasLocked) {
+                // Reward
+                rewardMap[milestone.reward].reward();
+                showPopUp();
+            }
         } else {
-            $el.on("click", () => {
-                notify(
-                    `${localTarget - resources} resources away from this milestone!`,
-                );
-            });
+            $el.on("click", () => notEnoughResources(localTarget));
         }
     });
 }
