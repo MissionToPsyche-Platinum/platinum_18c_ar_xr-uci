@@ -377,6 +377,9 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+    --orange: rgb(241, 90, 36);
+    --purple: rgb(155, 93, 229);
 }
 
 body {
@@ -385,28 +388,16 @@ body {
     color: #ffffff;
 }
 
-/* Dimmed Overlay */
-.end-screen-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
 /* The Modal Box */
 .end-screen-modal {
-    background: #1e1e24;
+    background: rgba(30, 30, 36, 0.8);
     border: 2px solid #3a3a45;
     border-radius: 12px;
-    padding: 40px;
+    padding: 20px;
+    margin: auto;
     width: 90%;
     max-width: 500px;
+    max-height: 90dvh;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
     text-align: center;
 }
@@ -417,7 +408,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 2px;
     color: #f8f9fa;
-    border-bottom: 2px solid #00d2ff;
+    border-bottom: 2px solid var(--orange);
     padding-bottom: 15px;
     display: inline-block;
 }
@@ -432,7 +423,12 @@ body {
     margin-bottom: 20px;
 }
 
-.stat-group h2 {
+.upgrades-stat-group {
+    overflow-y: auto;
+    max-height: 30dvh;
+}
+
+.stats-container h2 {
     font-size: 16px;
     color: #8e8e9f;
     margin-bottom: 15px;
@@ -461,8 +457,7 @@ body {
 }
 
 /* Accent Colors for Stats */
-.text-blue { color: #00d2ff; }
-.text-gold { color: #ffd700; }
+.text-highlight { color: var(--orange); }
 
 .divider {
     border: 0;
@@ -492,8 +487,8 @@ body {
 }
 
 .btn-primary {
-    background: #00d2ff;
-    color: #000;
+    background: var(--purple);
+    color: white;
 }
 
 .btn-primary:hover {

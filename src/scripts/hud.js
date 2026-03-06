@@ -9,7 +9,7 @@ let globalTimer;
 let rewardMap;
 let maxResources = 0;
 
-const resourceUnit = params.TARGET_RESOURCES / milestones.length;
+const milestoneUnit = params.TARGET_RESOURCES / milestones.length;
 
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
@@ -40,7 +40,6 @@ export class Timer {
 
             if (this.isTimesUp()) this.onTimesUp();
         } else $("#timer").text("∞");
-        
     }
 
     start() {
@@ -65,7 +64,7 @@ export class Timer {
 
     onTimesUp() {
         $("#hud").hide();
-        $("#end-screen-overlay").show();
+        initEndScreen();
         this.pause();
     }
 
@@ -76,6 +75,19 @@ export class Timer {
         this.infiniteMode = true;
         this.start();
     }
+}
+
+function initEndScreen() {
+    $(".resources-count").text(getResources());
+    $(".milestones-count").text(Math.floor(getResources() / milestoneUnit));
+    Object.values(rewardMap).forEach((upgrade) => {
+        $(".upgrades-stat-group").append(`
+        <div class="stat-row">
+            <span class="stat-label">${upgrade.name}</span>
+            <span class="stat-value">Lvl ${upgrade.level}</span>
+        </div>`);
+    });
+    $("#end-screen-overlay").show();
 }
 
 export function initHUD(timer, tools, sensors, exitAR) {
@@ -93,7 +105,7 @@ export function initHUD(timer, tools, sensors, exitAR) {
 
     $("#milestones").on("click", ".locked-milestones", function () {
         const i = $(this).data("index");
-        notEnoughResources(resourceUnit * (i + 1));
+        notEnoughResources(milestoneUnit * (i + 1));
     });
 
     for (const [i, tool] of Object.values(tools).entries()) {
@@ -135,7 +147,9 @@ export function initHUD(timer, tools, sensors, exitAR) {
     });
 
     $(".btn-continue").on("click", () => globalTimer.infinite());
-    $(".btn-exit").on("click", exitAR)
+    $(".btn-exit").on("click", exitAR);
+
+    addResources(39)
 
     // Construct timer
     globalTimer = timer;
@@ -170,7 +184,7 @@ export function addResources(cnt) {
 
     milestones.forEach((milestone, i) => {
         const $el = $(`.milestone-buttons#${i}`);
-        const localTarget = resourceUnit * (i + 1);
+        const localTarget = milestoneUnit * (i + 1);
 
         // Check if it was previously locked
         const wasLocked = $el.hasClass("locked-milestones");
