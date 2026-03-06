@@ -178,6 +178,8 @@ export function getResources() {
 }
 
 export function addResources(cnt) {
+    $("#milestones").off();
+
     const currCnt = getResources();
     const resources = currCnt + cnt;
     const totalTarget = params.TARGET_RESOURCES;
@@ -200,7 +202,9 @@ export function addResources(cnt) {
         const showPopUp = () => {
             $("#pop-up-title").text(milestone.title);
             $("#pop-up-text").text(milestone.text);
-            $("#pop-up-upgrade-box").html(`<img src="${import.meta.env.BASE_URL}${milestone.image}" style="width:50px; height:50px;"></img>`);
+            $("#pop-up-upgrade-box").html(
+                `<img src="${import.meta.env.BASE_URL}${milestone.image}" style="width:50px; height:50px;"></img>`,
+            );
             $("#pop-up").addClass("visible");
             $("#milestones-container").addClass("milestone-expand");
 
@@ -223,7 +227,7 @@ export function addResources(cnt) {
                 showPopUp();
             }
         } else {
-            $el.on("click", () => notEnoughResources(localTarget));
+            $el.on("click", () => notEnoughResources(localTarget, resources));
         }
     });
 }
