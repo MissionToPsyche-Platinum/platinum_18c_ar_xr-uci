@@ -7,13 +7,13 @@ import milestones from "../data/milestones.json";
 
 let globalTimer;
 let rewardMap;
-let maxResources = 0; 
+let maxResources = 0;
 
 const resourceUnit = params.TARGET_RESOURCES / milestones.length;
 
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
-    $("#end-screen").hide();
+    $("#end-screen-overlay").hide();
     $("loading").css("opacity", "0");
 });
 
@@ -25,18 +25,22 @@ export class Timer {
     constructor() {
         this.timeInSecond = params.TIME_LIMIT;
         this.timerId = null;
+        this.infiniteMode = false;
     }
 
     tick() {
         this.timeInSecond--;
 
-        const minute = Math.floor(this.timeInSecond / 60);
-        const second = this.timeInSecond % 60;
+        if (!this.infiniteMode) {
+            const minute = Math.floor(this.timeInSecond / 60);
+            const second = this.timeInSecond % 60;
 
-        const formattedSecond = String(second).padStart(2, "0");
-        $("#timer").text(`${minute}:${formattedSecond}`);
+            const formattedSecond = String(second).padStart(2, "0");
+            $("#timer").text(`${minute}:${formattedSecond}`);
 
-        if (this.isTimesUp()) this.onTimesUp();
+            if (this.isTimesUp()) this.onTimesUp();
+        } else $("#timer").text("∞");
+        
     }
 
     start() {
@@ -61,12 +65,20 @@ export class Timer {
 
     onTimesUp() {
         $("#hud").hide();
-        $("#end-screen").show();
+        $("#end-screen-overlay").show();
         this.pause();
+    }
+
+    infinite() {
+        $("#hud").show();
+        $("#end-screen-overlay").hide();
+        this.timeInSecond = Number.MAX_SAFE_INTEGER;
+        this.infiniteMode = true;
+        this.start();
     }
 }
 
-export function initHUD(timer, tools, sensors) {
+export function initHUD(timer, tools, sensors, exitAR) {
     hideNonHUD();
 
     $("#hud").show();
@@ -77,7 +89,7 @@ export function initHUD(timer, tools, sensors) {
         $("#milestones").prepend(
             `<button class="milestone-buttons locked-milestones" id=${i} data-index=${i}></button>`,
         );
-    };
+    }
 
     $("#milestones").on("click", ".locked-milestones", function () {
         const i = $(this).data("index");
@@ -121,6 +133,9 @@ export function initHUD(timer, tools, sensors) {
     $("#upgrade-trigger").on("click", function () {
         $("#upgrade-options").toggle();
     });
+
+    $(".btn-continue").on("click", () => globalTimer.infinite());
+    $(".btn-exit").on("click", exitAR)
 
     // Construct timer
     globalTimer = timer;

@@ -353,7 +353,9 @@ function render(timestamp, frame) {
                 if (asteroidSpawned && !buttonsSpawned) {
                     initToolUpgrades();
                     initSensorUpgrades();
-                    initHUD(timer, toolUpgrades, sensorUpgrades);
+                    initHUD(timer, toolUpgrades, sensorUpgrades, () =>
+                        session.end(),
+                    );
                     buttonsSpawned = fillRandomButtons(
                         sensorUpgrades.MAX_BUTTON.value,
                     );
