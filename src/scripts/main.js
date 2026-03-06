@@ -304,7 +304,9 @@ function init() {
     });
 
     container.append(renderer.domElement);
-    $("body").append(getARButton(renderer));
+    const ARbutton = getARButton(renderer);
+    $(ARbutton).removeAttr("style").addClass("btn-enter");
+    $("body").append(ARbutton);
     $(window).on("resize", onWindowResize);
 }
 
@@ -360,9 +362,8 @@ function render(timestamp, frame) {
                     buttonsSpawned = fillRandomButtons(
                         sensorUpgrades.MAX_BUTTON.value,
                     );
+                    reticle.visible = false;
                 }
-            } else {
-                reticle.visible = false;
             }
         }
     }

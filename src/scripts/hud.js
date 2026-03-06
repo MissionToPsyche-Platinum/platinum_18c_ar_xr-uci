@@ -28,16 +28,19 @@ export class Timer {
         this.infiniteMode = false;
     }
 
+    format() {
+        const minute = Math.floor(this.timeInSecond / 60);
+        const second = this.timeInSecond % 60;
+
+        const formattedSecond = String(second).padStart(2, "0");
+        return `${minute}:${formattedSecond}`;
+    }
+
     tick() {
         this.timeInSecond--;
 
         if (!this.infiniteMode) {
-            const minute = Math.floor(this.timeInSecond / 60);
-            const second = this.timeInSecond % 60;
-
-            const formattedSecond = String(second).padStart(2, "0");
-            $("#timer").text(`${minute}:${formattedSecond}`);
-
+            $("#timer").text(this.format());
             if (this.isTimesUp()) this.onTimesUp();
         } else $("#timer").text("∞");
     }
@@ -69,11 +72,11 @@ export class Timer {
     }
 
     infinite() {
-        $("#hud").show();
         $("#end-screen-overlay").hide();
         this.timeInSecond = Number.MAX_SAFE_INTEGER;
         this.infiniteMode = true;
         this.start();
+        $("#hud").show();
     }
 }
 
@@ -82,10 +85,10 @@ function initEndScreen() {
     $(".milestones-count").text(Math.floor(getResources() / milestoneUnit));
     Object.values(rewardMap).forEach((upgrade) => {
         $(".upgrades-stat-group").append(`
-        <div class="stat-row">
+            <div class="stat-row">
             <span class="stat-label">${upgrade.name}</span>
             <span class="stat-value">Lvl ${upgrade.level}</span>
-        </div>`);
+            </div>`);
     });
     $("#end-screen-overlay").show();
 }
@@ -93,6 +96,8 @@ function initEndScreen() {
 export function initHUD(timer, tools, sensors, exitAR) {
     hideNonHUD();
 
+    $("#resources").text("0");
+    $("#timer").text(timer.format());
     $("#hud").show();
     log(`Sensors are${sensors ? "" : " not"} ready`);
 
@@ -148,8 +153,6 @@ export function initHUD(timer, tools, sensors, exitAR) {
 
     $(".btn-continue").on("click", () => globalTimer.infinite());
     $(".btn-exit").on("click", exitAR);
-
-    addResources(39)
 
     // Construct timer
     globalTimer = timer;

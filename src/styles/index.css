@@ -129,7 +129,7 @@ canvas {
 }
 
 .xr-button-overlay {
-    z-index: 100 !important;
+    z-index: 100;
 }
 
 #log-display,
@@ -520,4 +520,53 @@ body {
     background: #ff4757;
     color: #fff;
     box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
+}
+
+@keyframes ar-pulse {
+  0% { box-shadow: 0 0 0 0px rgba(155, 93, 229, 0.5); }
+  70% { box-shadow: 0 0 0 15px rgba(155, 93, 229, 0); }
+  100% { box-shadow: 0 0 0 0px rgba(155, 93, 229, 0); }
+}
+
+.btn-enter {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 32px;
+  
+  /* Vibrant Gradient Background */
+  background: linear-gradient(135deg, rgb(155, 93, 229) 0%, rgb(110, 60, 180) 100%);
+  
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  
+  /* Layered Shadows for Depth */
+  box-shadow: 0 10px 20px rgba(58, 123, 213, 0.3), 0 6px 6px rgba(0, 0, 0, 0.1);
+  
+  /* The "Stand Out" Pulse */
+  animation: ar-pulse 2s infinite;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  width: max-content !important;
+
+  position: fixed;
+  bottom: 4dvh;
+  z-index: 100;
+  
+  transform-origin: center center !important;
+  left: 50dvw !important;
+  transform: translate(-50%);
+}
+
+.btn-enter:hover {
+  transform: scale(1.1) translateX(-45%);
+  background: rgb(155, 93, 229);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 12px 30px rgba(155, 93, 229, 0.4);
+  animation: none; /* Stop pulse on hover for focus */
 }
