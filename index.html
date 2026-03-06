@@ -25,20 +25,21 @@
                 <h2>Loading Asteroid</h2>
                 <div id="loader"></div>
             </div>
-            <div id="instructions">Tap to anchor Psyche</div>
+            <h2 id="instructions">Tap to anchor Psyche</h2>
             <div id="tracking-prompt">
                 <img src="./public/hand.png" alt="Hand Icon" />
-                <b id="instructions_1">Move Your Phone Around</b>
+                <h2 id="instructions_1">Move Your Phone Around</h2>
             </div>
             <div id="hud">
                 <div id="information">
+                    <button class="btn btn-danger-reverse btn-exit">Exit AR</button>
                     <div>
-                        <p>Timer</p>
-                        <h1 id="timer">5:00</h1>
+                        <h3>Timer</h3>
+                        <h1 id="timer"></h1>
                     </div>
                     <div>
-                        <p>Resources</p>
-                        <h1 id="resources">0</h1>
+                        <h3>Resources</h3>
+                        <h1 id="resources"></h1>
                     </div>
                 </div>
                 <div id="main">
@@ -65,7 +66,46 @@
                     <button id="upgrade-trigger">U</button>
                 </div>
             </div>
-            <div id="end-screen">This is the end</div>
+            <div id="end-screen-overlay">
+                <div class="end-screen-modal">
+                    <h1 class="end-title">Simulation Complete</h1>
+
+                    <div class="stats-container">
+                        <h2>General Performance</h2>
+                        <div class="stat-group">
+                            <div class="stat-row">
+                                <span class="stat-label"
+                                    >Resources Collected</span
+                                >
+                                <span
+                                    class="stat-value text-highlight resources-count"
+                                    >4,</span
+                                >
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label"
+                                    >Milestones Unlocked</span
+                                >
+                                <span
+                                    class="stat-value text-highlight milestones-count"
+                                ></span>
+                            </div>
+                        </div>
+
+                        <hr class="divider" />
+
+                        <h2>Upgrades Earned</h2>
+                        <div class="stat-group upgrades-stat-group"></div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary btn-continue">
+                            Continue Playing
+                        </button>
+                        <button class="btn btn-danger btn-exit">Exit AR</button>
+                    </div>
+                </div>
+            </div>
             <div id="notification-bar">
                 <p id="notification-text">This is a notification</p>
             </div>

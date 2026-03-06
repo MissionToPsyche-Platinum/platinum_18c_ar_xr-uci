@@ -7,13 +7,13 @@ import milestones from "../data/milestones.json";
 
 let globalTimer;
 let rewardMap;
-let maxResources = 0; 
+let maxResources = 0;
 
-const resourceUnit = params.TARGET_RESOURCES / milestones.length;
+const milestoneUnit = params.TARGET_RESOURCES / milestones.length;
 
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
-    $("#end-screen").hide();
+    $("#end-screen-overlay").hide();
     $("loading").css("opacity", "0");
 });
 
@@ -25,18 +25,24 @@ export class Timer {
     constructor() {
         this.timeInSecond = params.TIME_LIMIT;
         this.timerId = null;
+        this.infiniteMode = false;
+    }
+
+    format() {
+        const minute = Math.floor(this.timeInSecond / 60);
+        const second = this.timeInSecond % 60;
+
+        const formattedSecond = String(second).padStart(2, "0");
+        return `${minute}:${formattedSecond}`;
     }
 
     tick() {
         this.timeInSecond--;
 
-        const minute = Math.floor(this.timeInSecond / 60);
-        const second = this.timeInSecond % 60;
-
-        const formattedSecond = String(second).padStart(2, "0");
-        $("#timer").text(`${minute}:${formattedSecond}`);
-
-        if (this.isTimesUp()) this.onTimesUp();
+        if (!this.infiniteMode) {
+            $("#timer").text(this.format());
+            if (this.isTimesUp()) this.onTimesUp();
+        } else $("#timer").text("∞");
     }
 
     start() {
@@ -61,14 +67,37 @@ export class Timer {
 
     onTimesUp() {
         $("#hud").hide();
-        $("#end-screen").show();
+        initEndScreen();
         this.pause();
+    }
+
+    infinite() {
+        $("#end-screen-overlay").hide();
+        this.timeInSecond = Number.MAX_SAFE_INTEGER;
+        this.infiniteMode = true;
+        this.start();
+        $("#hud").show();
     }
 }
 
-export function initHUD(timer, tools, sensors) {
+function initEndScreen() {
+    $(".resources-count").text(getResources());
+    $(".milestones-count").text(Math.floor(getResources() / milestoneUnit));
+    Object.values(rewardMap).forEach((upgrade) => {
+        $(".upgrades-stat-group").append(`
+            <div class="stat-row">
+            <span class="stat-label">${upgrade.name}</span>
+            <span class="stat-value">Lvl ${upgrade.level}</span>
+            </div>`);
+    });
+    $("#end-screen-overlay").show();
+}
+
+export function initHUD(timer, tools, sensors, exitAR) {
     hideNonHUD();
 
+    $("#resources").text("0");
+    $("#timer").text(timer.format());
     $("#hud").show();
     log(`Sensors are${sensors ? "" : " not"} ready`);
 
@@ -77,11 +106,11 @@ export function initHUD(timer, tools, sensors) {
         $("#milestones").prepend(
             `<button class="milestone-buttons locked-milestones" id=${i} data-index=${i}></button>`,
         );
-    };
+    }
 
     $("#milestones").on("click", ".locked-milestones", function () {
         const i = $(this).data("index");
-        notEnoughResources(resourceUnit * (i + 1));
+        notEnoughResources(milestoneUnit * (i + 1));
     });
 
     for (const [i, tool] of Object.values(tools).entries()) {
@@ -122,6 +151,9 @@ export function initHUD(timer, tools, sensors) {
         $("#upgrade-options").toggle();
     });
 
+    $(".btn-continue").on("click", () => globalTimer.infinite());
+    $(".btn-exit").on("click", exitAR);
+
     // Construct timer
     globalTimer = timer;
 
@@ -155,7 +187,7 @@ export function addResources(cnt) {
 
     milestones.forEach((milestone, i) => {
         const $el = $(`.milestone-buttons#${i}`);
-        const localTarget = resourceUnit * (i + 1);
+        const localTarget = milestoneUnit * (i + 1);
 
         // Check if it was previously locked
         const wasLocked = $el.hasClass("locked-milestones");

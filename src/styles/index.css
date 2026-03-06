@@ -41,6 +41,7 @@ h1 {
 }
 
 #instructions {
+    color: var(--orange);
     margin: auto;
     flex-grow: 1;
     display: none;
@@ -77,6 +78,7 @@ h1 {
 }
 
 #tracking-prompt {
+    color: var(--orange);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -127,7 +129,7 @@ canvas {
 }
 
 .xr-button-overlay {
-    z-index: 100 !important;
+    z-index: 100;
 }
 
 #log-display,
@@ -355,6 +357,7 @@ body {
 }
 
 #loading {
+    color: var(--orange);
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -363,10 +366,207 @@ body {
 }
 
 #loader {
-    border: 1dvw solid #f3f3f3;
-    border-top: 1dvw solid #3498db;
+    border: 1dvw solid var(--orange);
+    border-top: 1dvw solid var(--purple);
     border-radius: 50%;
     width: 3dvh;
     height: 3dvh;
     animation: spin 1s linear infinite;
+}
+
+/* Base Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+    --orange: rgb(241, 90, 36);
+    --purple: rgb(155, 93, 229);
+}
+
+body {
+    /* Simulating a game background */
+    background-color: #121212;
+    color: #ffffff;
+}
+
+/* The Modal Box */
+.end-screen-modal {
+    background: rgba(30, 30, 36, 0.8);
+    border: 2px solid #3a3a45;
+    border-radius: 12px;
+    padding: 20px;
+    margin: auto;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90dvh;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+    text-align: center;
+}
+
+.end-title {
+    font-size: 28px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #f8f9fa;
+    border-bottom: 2px solid var(--orange);
+    padding-bottom: 15px;
+    display: inline-block;
+}
+
+/* Stats Styling */
+.stats-container {
+    text-align: left;
+    margin-bottom: 40px;
+}
+
+.stat-group {
+    margin-bottom: 20px;
+}
+
+.upgrades-stat-group {
+    overflow-y: auto;
+    max-height: 30dvh;
+}
+
+.stats-container h2 {
+    font-size: 16px;
+    color: #8e8e9f;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2a2a35;
+    padding: 12px 20px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+}
+
+.stat-label {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Accent Colors for Stats */
+.text-highlight {
+    color: var(--orange);
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background: #3a3a45;
+    margin: 20px 0;
+}
+
+/* Button Styling */
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex: 1;
+}
+
+.btn-primary {
+    background: var(--purple);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #33dbff;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: transparent;
+    color: #ff4757;
+    border: 2px solid #ff4757;
+}
+
+.btn-danger:hover {
+    background: #ff4757;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-danger-reverse {
+    border-radius: 14px;
+    background: #ff4757;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
+}
+
+@keyframes ar-pulse {
+  0% { box-shadow: 0 0 0 0px rgba(155, 93, 229, 0.5); }
+  70% { box-shadow: 0 0 0 15px rgba(155, 93, 229, 0); }
+  100% { box-shadow: 0 0 0 0px rgba(155, 93, 229, 0); }
+}
+
+.btn-enter {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 32px;
+  
+  /* Vibrant Gradient Background */
+  background: linear-gradient(135deg, rgb(155, 93, 229) 0%, rgb(110, 60, 180) 100%);
+  
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  
+  /* Layered Shadows for Depth */
+  box-shadow: 0 10px 20px rgba(58, 123, 213, 0.3), 0 6px 6px rgba(0, 0, 0, 0.1);
+  
+  /* The "Stand Out" Pulse */
+  animation: ar-pulse 2s infinite;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  width: max-content !important;
+
+  position: fixed;
+  bottom: 4dvh;
+  z-index: 100;
+  
+  transform-origin: center center !important;
+  left: 50dvw !important;
+  transform: translate(-50%);
+}
+
+.btn-enter:hover {
+  transform: scale(1.1) translateX(-45%);
+  background: rgb(155, 93, 229);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 12px 30px rgba(155, 93, 229, 0.4);
+  animation: none; /* Stop pulse on hover for focus */
 }

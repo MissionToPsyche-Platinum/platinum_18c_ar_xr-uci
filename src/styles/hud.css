@@ -61,7 +61,7 @@ body {
 #information > div {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  justify-content: space-between;
 
   padding: 10px 12px;
   border-radius: 14px;

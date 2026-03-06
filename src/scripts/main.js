@@ -304,7 +304,9 @@ function init() {
     });
 
     container.append(renderer.domElement);
-    $("body").append(getARButton(renderer));
+    const ARbutton = getARButton(renderer);
+    $(ARbutton).removeAttr("style").addClass("btn-enter");
+    $("body").append(ARbutton);
     $(window).on("resize", onWindowResize);
 }
 
@@ -353,13 +355,15 @@ function render(timestamp, frame) {
                 if (asteroidSpawned && !buttonsSpawned) {
                     initToolUpgrades();
                     initSensorUpgrades();
-                    initHUD(timer, toolUpgrades, sensorUpgrades);
+                    initHUD(timer, toolUpgrades, sensorUpgrades, () => {
+                        session.end();
+                        window.location.reload();
+                    });
                     buttonsSpawned = fillRandomButtons(
                         sensorUpgrades.MAX_BUTTON.value,
                     );
+                    reticle.visible = false;
                 }
-            } else {
-                reticle.visible = false;
             }
         }
     }

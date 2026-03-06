@@ -52,13 +52,13 @@ export function getController(renderer, onSelect) {
 }
 
 export function getRecticle() {
-  const reticle = new THREE.Mesh(
-    new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
-    new THREE.MeshBasicMaterial(),
-  );
-  reticle.matrixAutoUpdate = false;
-  reticle.visible = false;
-  return reticle;
+    const reticle = new THREE.Mesh(
+        new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
+        new THREE.MeshBasicMaterial({ color: 0xf15a24 }),
+    );
+    reticle.matrixAutoUpdate = false;
+    reticle.visible = false;
+    return reticle;
 }
 
 class AsteroidButton {
