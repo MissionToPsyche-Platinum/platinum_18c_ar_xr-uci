@@ -82,7 +82,11 @@ export class Timer {
 
 function initEndScreen() {
     $(".resources-count").text(getResources());
-    $(".milestones-count").text(Math.floor(getResources() / milestoneUnit));
+    $(".milestones-count").text(
+        Math.floor(
+            Math.min(getResources(), params.TARGET_RESOURCES) / milestoneUnit,
+        ),
+    );
     Object.values(rewardMap).forEach((upgrade) => {
         $(".upgrades-stat-group").append(`
             <div class="stat-row">
@@ -196,7 +200,7 @@ export function addResources(cnt) {
         const showPopUp = () => {
             $("#pop-up-title").text(milestone.title);
             $("#pop-up-text").text(milestone.text);
-            $("#pop-up-upgrade-box").text(milestone.reward);
+            $("#pop-up-upgrade-box").html(`<img src="${import.meta.env.BASE_URL}${milestone.image}" style="width:50px; height:50px;"></img>`);
             $("#pop-up").addClass("visible");
             $("#milestones-container").addClass("milestone-expand");
 

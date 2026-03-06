@@ -140,6 +140,7 @@ class Upgrade {
   constructor(config) {
     // Core Identity
     this.name = config.name;
+    this.image = config.image;
     this.buyable = config.buyable;
 
     // Cost Logic
