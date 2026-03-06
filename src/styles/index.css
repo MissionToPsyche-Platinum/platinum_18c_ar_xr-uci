@@ -41,6 +41,7 @@ h1 {
 }
 
 #instructions {
+    color: var(--orange);
     margin: auto;
     flex-grow: 1;
     display: none;
@@ -77,6 +78,7 @@ h1 {
 }
 
 #tracking-prompt {
+    color: var(--orange);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -355,6 +357,7 @@ body {
 }
 
 #loading {
+    color: var(--orange);
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -363,8 +366,8 @@ body {
 }
 
 #loader {
-    border: 1dvw solid #f3f3f3;
-    border-top: 1dvw solid #3498db;
+    border: 1dvw solid var(--orange);
+    border-top: 1dvw solid var(--purple);
     border-radius: 50%;
     width: 3dvh;
     height: 3dvh;
@@ -376,15 +379,15 @@ body {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
     --orange: rgb(241, 90, 36);
     --purple: rgb(155, 93, 229);
 }
 
 body {
     /* Simulating a game background */
-    background-color: #121212; 
+    background-color: #121212;
     color: #ffffff;
 }
 
@@ -457,7 +460,9 @@ body {
 }
 
 /* Accent Colors for Stats */
-.text-highlight { color: var(--orange); }
+.text-highlight {
+    color: var(--orange);
+}
 
 .divider {
     border: 0;
@@ -508,4 +513,11 @@ body {
     color: #fff;
     box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
     transform: translateY(-2px);
+}
+
+.btn-danger-reverse {
+    border-radius: 14px;
+    background: #ff4757;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
 }
