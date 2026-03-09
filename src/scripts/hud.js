@@ -156,7 +156,29 @@ export function initHUD(timer, tools, sensors, exitAR) {
     });
 
     $(".btn-continue").on("click", () => globalTimer.infinite());
-    $(".btn-exit").on("click", exitAR);
+
+
+    //exit button stuff
+    $("#end-screen-overlay .btn-exit").on("click", exitAR);
+
+    let exitClickTimer = null;
+    const $exitBtn = $("#information .btn-exit");
+
+    console.log("Exit btn found:", $exitBtn.length);
+
+    $exitBtn.on("click", function () {
+        if (exitClickTimer) {
+            clearTimeout(exitClickTimer);
+            exitClickTimer = null;
+            exitAR();
+        } else {
+            $exitBtn.addClass("active");  // fade to saturated
+            exitClickTimer = setTimeout(() => {
+                $exitBtn.removeClass("active");  // fade back
+                exitClickTimer = null;
+            }, 4000);
+        }
+    });
 
     // Construct timer
     globalTimer = timer;
