@@ -4,9 +4,13 @@ import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import { log, notify } from "./util.js";
 import { addResources, getResources } from "./hud.js";
 import popSoundFile from "../../public/bubble_pop.mp3";
+import pickaxeSoundFile from "../../public/pickaxe.mp3";
 
 const popAudio = new Audio(popSoundFile);
 popAudio.volume = 0.6;
+
+const pickaxeAudio = new Audio(pickaxeSoundFile);
+pickaxeAudio.volume = 0.6;
 
 export function getCamera() {
   return new THREE.PerspectiveCamera(
@@ -52,13 +56,13 @@ export function getController(renderer, onSelect) {
 }
 
 export function getRecticle() {
-    const reticle = new THREE.Mesh(
-        new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
-        new THREE.MeshBasicMaterial({ color: 0xf15a24 }),
-    );
-    reticle.matrixAutoUpdate = false;
-    reticle.visible = false;
-    return reticle;
+  const reticle = new THREE.Mesh(
+    new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial(),
+  );
+  reticle.matrixAutoUpdate = false;
+  reticle.visible = false;
+  return reticle;
 }
 
 class AsteroidButton {
@@ -89,9 +93,6 @@ class AsteroidButton {
 
   onSelect() {
     setTimeout(() => {
-      popAudio.currentTime = 0;
-      popAudio.play().catch(() => {});
-
       this.changeColor(this.ON_SELECT_COLOR);
       setTimeout(() => this.changeColor(this.color), this.ON_SELECT_TIME);
     }, this.ON_SELECT_TIME);
@@ -110,6 +111,8 @@ export class SingleClickAsteroidButton extends AsteroidButton {
 
   onSelect() {
     log("SingleClick");
+    popAudio.currentTime = 0;
+    popAudio.play().catch(() => {});
     super.onSelect();
   }
 }
@@ -126,6 +129,8 @@ export class MultiClickAsteroidButton extends AsteroidButton {
 
   onSelect() {
     log("MultiClick");
+    pickaxeAudio.currentTime = 0;
+    pickaxeAudio.play().catch(() => {});
     super.onSelect();
   }
 }
@@ -140,7 +145,6 @@ class Upgrade {
   constructor(config) {
     // Core Identity
     this.name = config.name;
-    this.image = config.image;
     this.buyable = config.buyable;
 
     // Cost Logic
