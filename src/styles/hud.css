@@ -256,8 +256,8 @@ body {
 /* floating upgrade button */
 #upgrades {
   position: fixed;
-  bottom: clamp(16px, 5vw, 32px);
-  right: clamp(16px, 5vw, 32px);
+  bottom: 7dvw;
+  right: 5dvw;
 
   display: flex;
   flex-direction: column;
@@ -266,48 +266,77 @@ body {
 }
 
 #upgrade-trigger {
-  width: 110px;
-  height: 110px;
+  position: relative;
+  width: 72px;
+  height: 72px;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
 
-  text-align: center;
-  padding: 10px;
-
-  font-size: 18px;
+  font-size: 11px;
+  font-weight: 600;
   line-height: 1.1;
   color: white;
 
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+
+#upgrade-trigger::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: rgba(0, 0, 0, 0.45);
   border: 1px solid var(--border);
-
-  clip-path: polygon(
-    50% 0%,
-    95% 25%,
-    95% 75%,
-    50% 100%,
-    5% 75%,
-    5% 25%
-  );
+  clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+  transition: filter .15s ease;
+  z-index: -1;
+  inset: -8px;
 }
 
 #upgrade-trigger:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(120, 200, 255, 0.6);
 }
 
+#upgrade-trigger:hover::before {
+  filter: drop-shadow(0 0 8px rgba(120, 200, 255, 0.7));
+}
 
-#upgrade-options button{
+#upgrade-trigger.has-affordable::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green-glow);
+}
+
+#upgrade-options {
+  width: min(78vw, 460px);
+  max-height: 55dvh;
+  overflow-y: visible;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+#upgrade-options .upgrade-button {
   width: 100%;
-  min-height: 72px;              /* large tap area */
+  min-height: 78px;
+  padding: 12px 14px;
 
-  padding: 16px 18px;
-
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 54px;
   align-items: center;
+  gap: 12px;
 
   font-size: 18px;
   font-weight: 600;
@@ -322,16 +351,74 @@ body {
 
   cursor: pointer;
   transition: transform .15s ease, background .2s ease;
-
 }
 
-#upgrade-options button:hover {
-  transform: scale(1.04);
+#upgrade-options .upgrade-button:hover {
+  transform: scale(1.02);
   background: rgba(255,255,255,0.15);
 }
 
-#upgrade-options button:active {
-  transform: scale(0.96);
+#upgrade-options .upgrade-button:active {
+  transform: scale(0.92);
+}
+
+#upgrade-options .upgrade-button.unlocked {
+  background: rgba(35, 90, 60, 0.9);
+  border-color: rgba(120, 255, 170, 0.75);
+}
+
+#upgrade-options .upgrade-button.locked {
+  background: rgba(60, 60, 60, 0.72);
+  border-color: rgba(255, 255, 255, 0.14);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+#upgrade-options .upgrade-button:disabled {
+  pointer-events: none;
+}
+
+.upgrade-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+}
+
+.upgrade-name {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.upgrade-meta {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.92;
+}
+
+.upgrade-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upgrade-icon-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.upgrade-icon-fallback {
+  font-size: 24px;
+  line-height: 1;
 }
 
 /* focus */

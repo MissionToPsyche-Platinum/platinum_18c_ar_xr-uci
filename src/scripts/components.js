@@ -58,7 +58,7 @@ export function getController(renderer, onSelect) {
 export function getRecticle() {
   const reticle = new THREE.Mesh(
     new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
-    new THREE.MeshBasicMaterial(),
+    new THREE.MeshBasicMaterial({color: 0xf15a24}),
   );
   reticle.matrixAutoUpdate = false;
   reticle.visible = false;
@@ -145,7 +145,9 @@ class Upgrade {
   constructor(config) {
     // Core Identity
     this.name = config.name;
+    this.image = config.image;
     this.buyable = config.buyable;
+    this.description = config.description;
 
     // Cost Logic
     this.initCost = config.defaultCost;
@@ -174,10 +176,6 @@ class Upgrade {
     return this.buyable;
   }
 
-  isUnlocked() {
-    return !this.locked;
-  }
-
   unlock() {
     this.locked = false;
   }
@@ -201,7 +199,7 @@ class Upgrade {
 
     log(`${this.name} total cost: ${this.cost}`);
     if (!this.hasEnoughResources()) {
-      notify(`Cost: ${this.cost}. You don't have enough resources!`);
+      notify(`Not enough resources!`);
       return;
     }
 

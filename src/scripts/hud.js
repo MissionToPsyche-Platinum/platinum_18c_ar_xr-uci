@@ -8,6 +8,8 @@ import milestones from "../data/milestones.json";
 let globalTimer;
 let rewardMap;
 let maxResources = 0;
+let hudTools = null;
+let hudSensors = null;
 
 const milestoneUnit = params.TARGET_RESOURCES / milestones.length;
 
@@ -19,6 +21,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function notEnoughResources(localTarget, resources = 0) {
     notify(`${localTarget - resources} resources away from this milestone!`);
+}
+
+function getUpgradeButtonHTML(kind, key, upgrade) {
+    const stateClass = upgrade.locked ? "locked" : "unlocked";
+    const disabledAttr = upgrade.locked ? "disabled" : "";
+
+    return `
+        <button
+            class="upgrade-button ${kind}-upgrade-button ${stateClass}"
+            data-key="${key}"
+            ${disabledAttr}
+        >
+            <span class="upgrade-info">
+                <span class="upgrade-name">${upgrade.name}</span>
+                <span class="upgrade-meta"><i>${upgrade.description}</i></span>
+                <span class="upgrade-meta">Cost: ${upgrade.cost} | Level: ${upgrade.level}</span>
+            </span>
+            <span class="upgrade-icon">
+                <img class="upgrade-icon-img" src="${import.meta.env.BASE_URL}${upgrade.image}" alt="${upgrade.name} icon" />
+            </span>
+        </button>`;
+}
+
+function renderUpgradeButtons(tools, sensors) {
+    const $container = $("#upgrade-options");
+    $container.empty();
+
+    for (const [key, tool] of Object.entries(tools)) {
+        if (!tool.isBuyable()) continue;
+        $container.append(getUpgradeButtonHTML("tool", key, tool));
+    }
+
+    for (const [key, sensor] of Object.entries(sensors)) {
+        if (!sensor.isBuyable()) continue;
+        $container.append(getUpgradeButtonHTML("sensor", key, sensor));
+    }
+
+    const affordableCount = [
+        ...Object.values(tools),
+        ...Object.values(sensors),
+    ].filter(
+        (u) => u.isBuyable() && !u.locked && u.hasEnoughResources(),
+    ).length;
+    $("#upgrade-trigger").toggleClass("has-affordable", affordableCount > 0);
 }
 
 export class Timer {
@@ -105,6 +151,9 @@ export function initHUD(timer, tools, sensors, exitAR) {
     $("#hud").show();
     log(`Sensors are${sensors ? "" : " not"} ready`);
 
+    hudTools = tools;
+    hudSensors = sensors;
+
     for (const i in milestones) {
         log(`Added milestone ${i}`);
         $("#milestones").prepend(
@@ -117,30 +166,22 @@ export function initHUD(timer, tools, sensors, exitAR) {
         notEnoughResources(milestoneUnit * (i + 1));
     });
 
-    for (const [i, tool] of Object.values(tools).entries()) {
-        if (!tool.isBuyable()) continue;
-        $("#upgrade-options").prepend(
-            `<button class="tool-upgrade-button" data-index=${i}>${i}</button>`,
-        );
-    }
-
-    for (const [i, sensor] of Object.values(sensors).entries()) {
-        if (!sensor.isBuyable()) continue;
-        $("#upgrade-options").prepend(
-            `<button class="sensor-upgrade-button" data-index=${(i + 2) * 2}>${(i + 2) * 2}</button>`,
-        );
-    }
+    renderUpgradeButtons(tools, sensors);
 
     $("#upgrade-options").on("click", ".tool-upgrade-button", function () {
-        const i = $(this).data("index");
-        log(`Buying Tool ${i}`);
-        Object.values(tools)[i].buy();
+        const key = String($(this).data("key"));
+        const tool = tools[key];
+        log(`Buying Tool ${key}`);
+        tool.buy();
+        renderUpgradeButtons(tools, sensors);
     });
 
     $("#upgrade-options").on("click", ".sensor-upgrade-button", function () {
-        const i = $(this).data("index");
-        log(`Buying Sensor ${i}`);
-        Object.values(sensors)[Math.trunc(i / 2 - 2)].buy();
+        const key = String($(this).data("key"));
+        const sensor = sensors[key];
+        log(`Buying Sensor ${key}`);
+        sensor.buy();
+        renderUpgradeButtons(tools, sensors);
     });
 
     $("#upgrade-options").hide();
@@ -203,7 +244,7 @@ export function addResources(cnt) {
             $("#pop-up-title").text(milestone.title);
             $("#pop-up-text").text(milestone.text);
             $("#pop-up-upgrade-box").html(
-                `<img src="${import.meta.env.BASE_URL}${milestone.image}" style="width:50px; height:50px;"></img>`,
+                `<img src="${import.meta.env.BASE_URL}${rewardMap[milestone.reward].image}" style="width:50px; height:50px;"></img>`,
             );
             $("#pop-up").addClass("visible");
             $("#milestones-container").addClass("milestone-expand");
@@ -230,6 +271,10 @@ export function addResources(cnt) {
             $el.on("click", () => notEnoughResources(localTarget, resources));
         }
     });
+
+    if (hudTools && hudSensors) {
+        renderUpgradeButtons(hudTools, hudSensors);
+    }
 }
 
 export function startLoadingPhase() {
