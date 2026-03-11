@@ -9,7 +9,9 @@
         "initialValue": 4,
         "valueIncrementBy": 0,
         "valueMultiplyBy": 2,
-        "valueCompounding": false
+        "valueCompounding": false,
+        "image": "/max_button.png",
+        "description": "x2 hotspot spawns"
     },
     "MULTICLICK_SPLIT": {
         "name": "Multiclick Split",
@@ -21,7 +23,9 @@
         "initialValue": 0.1,
         "valueIncrementBy": 0.1,
         "valueMultiplyBy": 1,
-        "valueCompounding": false
+        "valueCompounding": false,
+        "image": "/multiclick_split.png",
+        "description": "x2 Multiclick chance"
     },
     "MULTICLICK_TIMEOUT": {
         "name": "Multiclick Timeout",
@@ -33,7 +37,9 @@
         "initialValue": 1000,
         "valueIncrementBy": 0,
         "valueMultiplyBy": 2,
-        "valueCompounding": false
+        "valueCompounding": false,
+        "image": "/multiclick_timeout.png",
+        "description": "x2 Multiclick duration"
     },
     "ASTEROID_ROTATION_SPEED": {
         "name": "Asteroid Rotation Speed",
@@ -45,6 +51,8 @@
         "initialValue": 0.006,
         "valueIncrementBy": 0,
         "valueMultiplyBy": 2,
-        "valueCompounding": true
+        "valueCompounding": true,
+        "image": "",
+        "description": ""
     }
 }

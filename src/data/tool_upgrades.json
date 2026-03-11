@@ -9,7 +9,9 @@
         "initialValue": 1,
         "valueIncrementBy": 0,
         "valueMultiplyBy": 0,
-        "valueCompounding": false
+        "valueCompounding": false,
+        "image": "/manual_drill.png",
+        "description": "+1 resource/sec"
     },
     "CREW_MANAGER": {
         "name": "Crew Manager",
@@ -21,6 +23,8 @@
         "initialValue": 3,
         "valueIncrementBy": 0,
         "valueMultiplyBy": 0,
-        "valueCompounding": false
+        "valueCompounding": false,
+        "image": "/crew_manager.png",
+        "description": "+3 resources/sec"
     }
 }
