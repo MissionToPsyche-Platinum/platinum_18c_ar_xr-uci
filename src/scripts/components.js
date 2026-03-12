@@ -208,7 +208,11 @@ class Upgrade {
     this.reward();
   }
 
-  reward() {}
+  reward() {
+    this.value = this.getNextValue();
+    this.cost = this.getTotalCost();
+    this.level++;
+  }
 }
 
 export class ToolUpgrade extends Upgrade {
@@ -225,6 +229,10 @@ export class ToolUpgrade extends Upgrade {
     );
   }
 
+  pause() {
+    if (this.interval) clearInterval(this.interval);
+  }
+
   reward() {
     if (this.locked) {
       log(`Unlocked ${this.name}`);
@@ -232,7 +240,7 @@ export class ToolUpgrade extends Upgrade {
       return;
     }
 
-    this.level++;
+    super.reward();
     this.start();
   }
 }
@@ -248,9 +256,7 @@ export class SensorUpgrade extends Upgrade {
       return;
     }
 
-    this.value = this.getNextValue();
-    this.cost = this.getTotalCost();
-    this.level++;
+    super.reward();
 
     log(
       `${this.name} is now level ${this.level}. Next cost: ${this.cost}. Value: ${this.value}`,

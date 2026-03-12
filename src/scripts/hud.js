@@ -4,14 +4,14 @@ import { log, notify } from "./util.js";
 
 import params from "../data/params.json";
 import milestones from "../data/milestones.json";
+import { ToolUpgrade } from "./components.js";
 
 let globalTimer;
 let rewardMap;
 let maxResources = 0;
 let hudTools = null;
 let hudSensors = null;
-
-const milestoneUnit = params.TARGET_RESOURCES / milestones.length;
+let milestoneResources = [];
 
 document.addEventListener("DOMContentLoaded", function () {
     $("#hud").hide();
@@ -36,7 +36,7 @@ function getUpgradeButtonHTML(kind, key, upgrade) {
             <span class="upgrade-info">
                 <span class="upgrade-name">${upgrade.name}</span>
                 <span class="upgrade-meta"><i>${upgrade.description}</i></span>
-                <span class="upgrade-meta">Cost: ${upgrade.cost} | Level: ${upgrade.level}</span>
+                <span class="upgrade-meta">Next Cost: ${upgrade.cost} | Current Level: ${upgrade.level}</span>
             </span>
             <span class="upgrade-icon">
                 <img class="upgrade-icon-img" src="${import.meta.env.BASE_URL}${upgrade.image}" alt="${upgrade.name} icon" />
@@ -67,6 +67,14 @@ function renderUpgradeButtons(tools, sensors) {
     $("#upgrade-trigger").toggleClass("has-affordable", affordableCount > 0);
 }
 
+function initMilestoneResources(targetCost, startingCost, totalMilestones) {
+    const r = Math.pow(targetCost / startingCost, 1 / (totalMilestones - 1));
+
+    for (let i = 0; i < totalMilestones; i++) {
+        milestoneResources.push(Math.round(startingCost * Math.pow(r, i)));
+    }
+}
+
 export class Timer {
     constructor() {
         this.timeInSecond = params.TIME_LIMIT;
@@ -95,11 +103,17 @@ export class Timer {
         if (!this.timerId) {
             // prevent multiple intervals
             this.timerId = setInterval(() => this.tick(), 1000);
+            Object.values(rewardMap).forEach((upgrade) => {
+                if (upgrade instanceof ToolUpgrade) upgrade.start();
+            });
         }
     }
 
     pause() {
         clearInterval(this.timerId);
+        Object.values(rewardMap).forEach((upgrade) => {
+            if (upgrade instanceof ToolUpgrade) upgrade.pause();
+        });
         this.timerId = null;
     }
 
@@ -128,11 +142,11 @@ export class Timer {
 
 function initEndScreen() {
     $(".resources-count").text(getResources());
-    $(".milestones-count").text(
-        Math.floor(
-            Math.min(getResources(), params.TARGET_RESOURCES) / milestoneUnit,
-        ),
-    );
+    $(".milestones-count").text(() => {
+        for (let i = 0; i < milestoneResources.length; i++) {
+            if (maxResources < milestoneResources[i]) return i;
+        }
+    });
     Object.values(rewardMap).forEach((upgrade) => {
         $(".upgrades-stat-group").append(`
             <div class="stat-row">
@@ -145,6 +159,11 @@ function initEndScreen() {
 
 export function initHUD(timer, tools, sensors, exitAR) {
     hideNonHUD();
+    initMilestoneResources(
+        params.TARGET_MILESTONE_RESOURCES,
+        params.STARTING_MILESTONE_RESOURCES,
+        milestones.length,
+    );
 
     $("#resources").text("0");
     $("#timer").text(timer.format());
@@ -163,7 +182,7 @@ export function initHUD(timer, tools, sensors, exitAR) {
 
     $("#milestones").on("click", ".locked-milestones", function () {
         const i = $(this).data("index");
-        notEnoughResources(milestoneUnit * (i + 1));
+        notEnoughResources(milestoneResources[i]);
     });
 
     renderUpgradeButtons(tools, sensors);
@@ -198,7 +217,6 @@ export function initHUD(timer, tools, sensors, exitAR) {
 
     $(".btn-continue").on("click", () => globalTimer.infinite());
 
-
     //exit button stuff
     $("#end-screen-overlay .btn-exit").on("click", exitAR);
 
@@ -213,9 +231,9 @@ export function initHUD(timer, tools, sensors, exitAR) {
             exitClickTimer = null;
             exitAR();
         } else {
-            $exitBtn.addClass("active");  // fade to saturated
+            $exitBtn.addClass("active"); // fade to saturated
             exitClickTimer = setTimeout(() => {
-                $exitBtn.removeClass("active");  // fade back
+                $exitBtn.removeClass("active"); // fade back
                 exitClickTimer = null;
             }, 4000);
         }
@@ -240,23 +258,40 @@ export function getResources() {
     return Number($("#resources").text());
 }
 
+function calculateTrackerHeight(maxResources, heightPerMilestone) {
+    for (let i = 0; i < milestoneResources.length; i++) {
+        if (maxResources < milestoneResources[i]) {
+            const lower = i > 0 ? milestoneResources[i - 1] : 0;
+            const localHeightUnit =
+                heightPerMilestone / (milestoneResources[i] - lower);
+            return (
+                heightPerMilestone * i +
+                localHeightUnit * (maxResources - lower)
+            );
+        }
+    }
+}
+
 export function addResources(cnt) {
     $("#milestones").off();
 
     const currCnt = getResources();
     const resources = currCnt + cnt;
-    const totalTarget = params.TARGET_RESOURCES;
-    const unit = $("#milestones").height() / totalTarget;
+    const heightPerMilestone = $("#milestones").height() / milestones.length;
 
     // Update UI
     log(`Updating Resouces: ${resources}`);
     $("#resources").text(resources);
     maxResources = Math.max(maxResources, resources);
-    $("#milestones-tracker").height(unit * Math.min(maxResources, totalTarget));
+    const trackerHeight = calculateTrackerHeight(
+        maxResources,
+        heightPerMilestone,
+    );
+    $("#milestones-tracker").height(trackerHeight);
 
     milestones.forEach((milestone, i) => {
         const $el = $(`.milestone-buttons#${i}`);
-        const localTarget = milestoneUnit * (i + 1);
+        const localTarget = milestoneResources[i];
 
         // Check if it was previously locked
         const wasLocked = $el.hasClass("locked-milestones");

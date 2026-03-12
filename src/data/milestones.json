@@ -1,26 +1,51 @@
 [{
-        "title": "Milestone 1",
-        "text": "The Psyche spacecraft was launched on Oct 13, 2023, and is expected to arrive there by July 2029.",
-        "reward": "MAX_BUTTON"
-    },
-    {
-        "title": "Milestone 2",
-        "text": "Psyche is as big as Massachusetts, and 3x as small as Arizona.",
+        "title": "The Target is a Metal World",
+        "text": "The mission's destination is 16 Psyche, an unusual M-type (metallic) asteroid located in the main asteroid belt between Mars and Jupiter. Unlike most asteroids, which are primarily rock or ice, Psyche is exceptionally rich in metal.",
         "reward": "MANUAL_DRILL"
     },
     {
-        "title": "Milestone 3",
-        "text": "The Psyche spacecraft uses a solar electric propulsion system, the first of its kind, which emits a cool blue glow while it's launched.",
-        "reward": "MULTICLICK_SPLIT"
+        "title": "Massive Proportions",
+        "text": "16 Psyche is shaped somewhat like a potato and is roughly 173 miles (279 kilometers) at its widest point. It is so large that it contains about 1% of the entire mass of the asteroid belt.",
+        "reward": "MAX_BUTTON"
     },
     {
-        "title": "Milestone 4",
-        "text": "The surface gravity on Psyche is much less than it is on Earth; therefore gravity on Psyche makes lifting a car feel like lifting a dog!",
+        "title": "Sci-Fi Propulsion System",
+        "text": "Psyche is the first interplanetary spacecraft to rely on Hall-effect thrusters. Powered by large solar arrays, these thrusters use electromagnetic fields to accelerate and expel xenon gas ions, creating thrust while emitting a sci-fi-like blue glow.",
+        "reward": "MANUAL_DRILL"
+    },
+    {
+        "title": "Advanced Science Payload",
+        "text": "To study the asteroid without landing on it, the spacecraft is equipped with three primary instruments: a Multispectral Imager to map the surface, a Gamma-Ray and Neutron Spectrometer to determine its chemical makeup, and a Magnetometer to search for evidence of an ancient magnetic field.",
         "reward": "CREW_MANAGER"
     },
     {
-        "title": "Milestone 5",
-        "text": "It is estimated that 30-60% of Psyche’s volume is metal. ",
+        "title": "An Ancient Planetary Core",
+        "text": "Scientists hypothesize that Psyche could be the exposed nickel-iron core of an early planet (a planetesimal) that had its rocky outer crust stripped away by violent hit-and-run collisions during the early formation of the solar system.",
+        "reward": "MULTICLICK_SPLIT"
+    },
+    {
+        "title": "A 26-Month Orbital Study",
+        "text": "Once the spacecraft reaches the asteroid, it will spend at least 26 months orbiting 16 Psyche at four distinct, gradually lowering altitudes to map its topography, gravity, and elemental composition.",
+        "reward": "MAX_BUTTON"
+    },
+    {
+        "title": "A 2.2-Billion-Mile Journey",
+        "text": "The spacecraft will travel for nearly six years to reach its destination. It will use a Mars gravity assist in 2026 and is expected to finally arrive at the asteroid in August 2029.",
+        "reward": "MULTICLICK_TIMEOUT"
+    },
+    {
+        "title": "The Spacecraft Launched in 2023",
+        "text": "The NASA Psyche spacecraft successfully launched on October 13, 2023, riding a SpaceX Falcon Heavy rocket from the Kennedy Space Center in Florida.",
+        "reward": "CREW_MANAGER"
+    },
+    {
+        "title": "Testing Laser Communications",
+        "text": "The spacecraft is carrying a technology demonstration called Deep Space Optical Communications (DSOC). This experiment tests high-bandwidth laser (near-infrared) communications beyond the Moon for the very first time, allowing for much faster data transmission than traditional radio waves.",
+        "reward": "MULTICLICK_SPLIT"
+    },
+    {
+        "title": "A Historic Discovery",
+        "text": "The asteroid was discovered on March 17, 1852, by Italian astronomer Annibale de Gasparis. The \"16\" in its name signifies it was the 16th minor planet ever discovered, and it was named after the Greek goddess of the soul.",
         "reward": "MULTICLICK_TIMEOUT"
     }
 ]
