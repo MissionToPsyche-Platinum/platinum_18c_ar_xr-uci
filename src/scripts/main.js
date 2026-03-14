@@ -129,7 +129,7 @@ function sessionStart() {
 
 function onSelect() {
     function addAsteroid() {
-        if (!isReady("Asteroid", asteroidGltf)) {
+        if (!(isReady("Asteroid", asteroidGltf) && reticle && reticle.visible)) {
             notify("Loading Psyche Model...");
             return;
         }
