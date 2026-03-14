@@ -20,6 +20,7 @@ import {
     getDebugArrowHelper,
     getDebugBoxHelper,
     getDebugEllipsoidHelper,
+    notify,
     log,
 } from "./util.js";
 import {
@@ -116,12 +117,22 @@ export function initSensorUpgrades() {
 
 function sessionStart() {
     planeFound = false;
-    startLoadingPhase();
+    // If the GLTF already loaded before the session started (common on Android
+    // with cached assets), go straight to scanning so the phase isn't stuck on
+    // "Loading Asteroid" for the entire session.
+    if (asteroidGltf) {
+        startScanningPhase();
+    } else {
+        startLoadingPhase();
+    }
 }
 
 function onSelect() {
     function addAsteroid() {
-        if (!isReady("Asteroid", asteroidGltf)) return;
+        if (!(isReady("Asteroid", asteroidGltf) && reticle && reticle.visible)) {
+            notify("Loading Psyche Model...");
+            return;
+        }
 
         reticle.matrix.decompose(
             asteroidGltf.position,
@@ -315,25 +326,34 @@ function render(timestamp, frame) {
         const referenceSpace = renderer.xr.getReferenceSpace();
         const session = renderer.xr.getSession();
 
-        if (asteroidGltf && !asteroidSpawned) {
-            if (hitTestSourceRequested === false) {
-                session
-                    .requestReferenceSpace("viewer")
-                    .then((referenceSpace) => {
-                        session
-                            .requestHitTestSource({ space: referenceSpace })
-                            .then((source) => {
-                                hitTestSource = source;
-                            });
-                    });
+        // Request the hit-test source as soon as the first frame arrives,
+        // not gated on asteroidGltf.  On Android Chrome / ARCore the source
+        // must be requested early; delaying it until the model loads can miss
+        // the valid setup window.  Unhandled rejections are also logged so
+        // silent failures on Android are surfaced.
+        if (!hitTestSourceRequested) {
+            session
+                .requestReferenceSpace("viewer")
+                .then((viewerSpace) => {
+                    session
+                        .requestHitTestSource({ space: viewerSpace })
+                        .then((source) => {
+                            hitTestSource = source;
+                        })
+                        .catch((err) =>
+                            log(`Hit-test source request failed: ${err}`),
+                        );
+                })
+                .catch((err) =>
+                    log(`Viewer reference-space request failed: ${err}`),
+                );
 
-                session.addEventListener("end", () => {
-                    hitTestSourceRequested = false;
-                    hitTestSource = null;
-                });
+            session.addEventListener("end", () => {
+                hitTestSourceRequested = false;
+                hitTestSource = null;
+            });
 
-                hitTestSourceRequested = true;
-            }
+            hitTestSourceRequested = true;
         }
 
         if (hitTestSource) {
